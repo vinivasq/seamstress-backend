@@ -490,6 +490,3 @@ dist
 /libpeerconnection.log
 testem.log
 /typings
-
-#Resources
-src/Seamstress.API/Resources/Images/*
