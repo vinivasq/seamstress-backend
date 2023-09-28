@@ -13,8 +13,7 @@ namespace Seamstress.API
 
         WebRootPath = "wwwroot",
 
-      });
-      CreateHostBuilder(args).Build().Run();
+      }).Build().Run();
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -22,6 +21,7 @@ namespace Seamstress.API
         .ConfigureWebHostDefaults(webBuilder =>
         {
           webBuilder.UseStartup<Startup>();
+
         });
 
   }
