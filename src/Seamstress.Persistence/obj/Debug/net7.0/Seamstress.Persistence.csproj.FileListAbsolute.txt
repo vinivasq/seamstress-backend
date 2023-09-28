@@ -1,0 +1,17 @@
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\bin\Debug\net7.0\Seamstress.Persistence.deps.json
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\bin\Debug\net7.0\Seamstress.Persistence.runtimeconfig.json
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\bin\Debug\net7.0\Seamstress.Persistence.dll
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\bin\Debug\net7.0\Seamstress.Persistence.pdb
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\bin\Debug\net7.0\Seamstress.Domain.dll
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\bin\Debug\net7.0\Seamstress.Domain.pdb
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.csproj.AssemblyReference.cache
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.AssemblyInfoInputs.cache
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.AssemblyInfo.cs
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.csproj.CoreCompileInputs.cache
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.csproj.CopyComplete
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.dll
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\refint\Seamstress.Persistence.dll
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.pdb
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\Seamstress.Persistence.genruntimeconfig.cache
+C:\Developer\repos\seamstress\backend\src\Seamstress.Persistence\obj\Debug\net7.0\ref\Seamstress.Persistence.dll
