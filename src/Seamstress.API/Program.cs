@@ -4,6 +4,16 @@ namespace Seamstress.API
   {
     public static void Main(string[] args)
     {
+      WebApplication.CreateBuilder(new WebApplicationOptions()
+      {
+
+        Args = args,
+
+        ContentRootPath = "/app/out",
+
+        WebRootPath = "wwwroot",
+
+      });
       CreateHostBuilder(args).Build().Run();
     }
 
@@ -13,5 +23,6 @@ namespace Seamstress.API
         {
           webBuilder.UseStartup<Startup>();
         });
+
   }
 }
