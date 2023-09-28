@@ -79,11 +79,13 @@ namespace Seamstress.API
 
       app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
-      app.UseStaticFiles(new StaticFileOptions()
-      {
-        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
-        RequestPath = new PathString("/Resources")
-      });
+      app.UseStaticFiles();
+
+      // app.UseStaticFiles(new StaticFileOptions()
+      // {
+      //   FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
+      //   RequestPath = new PathString("/Resources")
+      // });
 
       app.UseEndpoints(endpoints =>
       {
