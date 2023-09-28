@@ -4,9 +4,7 @@ using Seamstress.Persistence;
 using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.FileProviders;
 
 namespace Seamstress.API
 {
@@ -55,7 +53,6 @@ namespace Seamstress.API
       services.AddCors();
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Seamstress.API", Version = "v1" });
         c.CustomSchemaIds(type => type.ToString());
       });
     }
@@ -72,13 +69,13 @@ namespace Seamstress.API
 
       app.UseHttpsRedirection();
 
-      app.UseRouting();
+      app.UseStaticFiles();
 
-      app.UseAuthorization();
+      app.UseRouting();
 
       app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
-      app.UseStaticFiles();
+      app.UseAuthorization();
 
       app.UseEndpoints(endpoints =>
       {
