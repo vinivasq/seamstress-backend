@@ -75,7 +75,7 @@ namespace Seamstress.Application
     public async Task<string> SaveImage(IFormFile imageFile)
     {
       string imageName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-      string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "Resources/Images", imageName);
+      string imagePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Resources/Images", imageName);
 
       using (var fileStream = new FileStream(imagePath, FileMode.Create))
       {
@@ -87,7 +87,7 @@ namespace Seamstress.Application
 
     public void DeleteImage(string imageName)
     {
-      string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "Resources/Images", imageName);
+      string imagePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Resources/Images", imageName);
       if (File.Exists(imagePath)) File.Delete(imagePath);
     }
   }
