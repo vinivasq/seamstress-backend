@@ -60,6 +60,10 @@ namespace Seamstress.API
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+
+      app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
+
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
@@ -73,7 +77,6 @@ namespace Seamstress.API
 
       app.UseRouting();
 
-      app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
       app.UseAuthorization();
 
