@@ -9,9 +9,15 @@ namespace Seamstress.Application
 
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IItemService _itemService;
+    private readonly IAzureBlobService _azureBlobService;
 
-    public ImageService(IWebHostEnvironment webHostEnvironment, IItemService itemService)
+    public ImageService(
+                          IWebHostEnvironment webHostEnvironment,
+                          IItemService itemService,
+                          IAzureBlobService azureBlobService
+                        )
     {
+      this._azureBlobService = azureBlobService;
       this._itemService = itemService;
       this._webHostEnvironment = webHostEnvironment;
     }
@@ -49,10 +55,14 @@ namespace Seamstress.Application
             imageNames.Add(SaveImage(imageToAdd).Result);
           });
 
-          imagesToRemove.ForEach(imageName =>
+          imagesToRemove.ForEach(async imageName =>
           {
-            DeleteImage(imageName);
-            imageNames.Remove(imageName);
+            if (await DeleteImage(imageName))
+              imageNames.Remove(imageName);
+            else
+            {
+              throw new Exception($"Não foi possível remover a imagem {imageName}");
+            }
           });
 
           return string.Join(';', imageNames);
@@ -75,20 +85,13 @@ namespace Seamstress.Application
     public async Task<string> SaveImage(IFormFile imageFile)
     {
       string imageName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-      string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "Resources/Images", imageName);
 
-      using (var fileStream = new FileStream(imagePath, FileMode.Create))
-      {
-        await imageFile.CopyToAsync(fileStream);
-      }
-
-      return imageName;
+      return await this._azureBlobService.UploadModelImageAsync(imageFile, imageName);
     }
 
-    public void DeleteImage(string imageName)
+    public async Task<bool> DeleteImage(string imageName)
     {
-      string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "Resources/Images", imageName);
-      if (File.Exists(imagePath)) File.Delete(imagePath);
+      return await this._azureBlobService.DeleteModelImageAsync(imageName);
     }
   }
 }

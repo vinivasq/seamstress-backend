@@ -13,7 +13,6 @@ namespace Seamstress.API
         {
           webBuilder
           .UseContentRoot("/app/out")
-          .UseWebRoot("wwwroot")
           .UseStartup<Startup>();
         });
   }
