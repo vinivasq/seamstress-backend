@@ -6,20 +6,16 @@ namespace Seamstress.Application
 {
   public class ImageService : IImageService
   {
-
-    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IItemService _itemService;
     private readonly IAzureBlobService _azureBlobService;
 
     public ImageService(
-                          IWebHostEnvironment webHostEnvironment,
                           IItemService itemService,
                           IAzureBlobService azureBlobService
                         )
     {
       this._azureBlobService = azureBlobService;
       this._itemService = itemService;
-      this._webHostEnvironment = webHostEnvironment;
     }
 
     public async Task<string> UpdateImage(List<IFormFile> formFiles, int itemId)
@@ -55,9 +51,9 @@ namespace Seamstress.Application
             imageNames.Add(SaveImage(imageToAdd).Result);
           });
 
-          imagesToRemove.ForEach(async imageName =>
+          imagesToRemove.ForEach(imageName =>
           {
-            if (await DeleteImage(imageName))
+            if (DeleteImage(imageName))
               imageNames.Remove(imageName);
             else
             {
@@ -89,9 +85,9 @@ namespace Seamstress.Application
       return await this._azureBlobService.UploadModelImageAsync(imageFile, imageName);
     }
 
-    public async Task<bool> DeleteImage(string imageName)
+    public bool DeleteImage(string imageName)
     {
-      return await this._azureBlobService.DeleteModelImageAsync(imageName);
+      return this._azureBlobService.DeleteModelImage(imageName);
     }
   }
 }

@@ -6,6 +6,6 @@ namespace Seamstress.Application.Contracts
   {
     public Task<string> UpdateImage(List<IFormFile> formFile, int itemId);
     public Task<string> SaveImage(IFormFile imageFile);
-    public Task<bool> DeleteImage(string imageName);
+    public bool DeleteImage(string imageName);
   }
 }

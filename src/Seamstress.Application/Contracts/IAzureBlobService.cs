@@ -6,6 +6,6 @@ namespace Seamstress.Application.Contracts
   {
     public Task<string> ListBlobContainersAsync();
     public Task<string> UploadModelImageAsync(IFormFile imageFile, string imageName);
-    public Task<bool> DeleteModelImageAsync(string imageName);
+    public bool DeleteModelImage(string imageName);
   }
 }

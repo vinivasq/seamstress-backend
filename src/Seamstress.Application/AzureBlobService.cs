@@ -59,7 +59,7 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<bool> DeleteModelImageAsync(string imageName)
+    public bool DeleteModelImage(string imageName)
     {
       BlobServiceClient client = GetServiceClient();
 
@@ -69,7 +69,7 @@ namespace Seamstress.Application
 
         var blob = blobContainer.GetBlobClient($"models/{imageName}");
 
-        return await blob.DeleteIfExistsAsync();
+        return blob.DeleteIfExists();
       }
       catch (Exception ex)
       {
