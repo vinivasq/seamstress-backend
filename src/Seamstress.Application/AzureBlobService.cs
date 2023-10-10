@@ -7,8 +7,8 @@ namespace Seamstress.Application
 {
   public class AzureBlobService : IAzureBlobService
   {
-    private readonly string _storageAccount = "seamstressstorage";
-    private readonly string _accessKey = "D8M6kVO/OTC3v3MJus++GfJUrS3CUte0wsSiwBAqRFOqis+M+qRbpMMNl6Uot7HI0rgi9MKRiQ45+AStAFHGqQ==";
+    private readonly string _storageAccount = Environment.GetEnvironmentVariable("AZURE_STORAGE_ACCOUNT")!;
+    private readonly string _accessKey = Environment.GetEnvironmentVariable("AZURE_ACCESS_KEY")!;
 
     private BlobServiceClient GetServiceClient()
     {
