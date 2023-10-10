@@ -21,7 +21,7 @@ namespace Seamstress.API
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddDbContext<SeamstressContext>(
-        context => context.UseNpgsql("host=containers-us-west-43.railway.app;port=7916;username=postgres;password=Ip9wIRrd9a3Bk5kOPaGD;database=railway"));
+        context => context.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
 
       services.AddControllers().AddJsonOptions(options =>
       {
