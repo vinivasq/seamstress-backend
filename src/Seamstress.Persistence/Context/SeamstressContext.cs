@@ -8,7 +8,6 @@ namespace Seamstress.Persistence.Context
     public SeamstressContext(DbContextOptions<SeamstressContext> options) : base(options) { }  // passa as options que recebemos na chamada construtor para a base() que é o DbContext
 
     public DbSet<Order> Orders { get; set; } = null!;//tabela do contexto do banco de dados
-    public DbSet<User> Users { get; set; } = null!;
     public DbSet<OrderUser> OrdersUser { get; set; } = null!;
     public DbSet<Customer> Customers { get; set; } = null!;
     public DbSet<Sizings> Sizings { get; set; } = null!;
