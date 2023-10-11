@@ -5,6 +5,7 @@ using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using Seamstress.API.Helpers;
 
 namespace Seamstress.API
 {
@@ -59,7 +60,7 @@ namespace Seamstress.API
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
       if (env.IsDevelopment())
       {
@@ -82,6 +83,9 @@ namespace Seamstress.API
       {
         endpoints.MapControllers();
       });
+
+      var scope = app.ApplicationServices.CreateScope();
+      await MigrationsHelper.ManageDataAsync(scope.ServiceProvider);
 
       AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
