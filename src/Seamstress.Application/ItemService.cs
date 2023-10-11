@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Domain;
-using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
 
 namespace Seamstress.Application
@@ -12,14 +11,17 @@ namespace Seamstress.Application
   {
     private readonly IItemPersistence _itemPersistence;
     private readonly IGeneralPersistence _generalPersistence;
+    private readonly IAzureBlobService _azureService;
     private readonly IMapper _mapper;
 
     public ItemService(IItemPersistence itemPersistence,
+                        IAzureBlobService azureService,
                         IGeneralPersistence generalPersistence,
                         IMapper mapper)
     {
       this._mapper = mapper;
       this._generalPersistence = generalPersistence;
+      this._azureService = azureService;
       this._itemPersistence = itemPersistence;
     }
 
@@ -134,6 +136,12 @@ namespace Seamstress.Application
       try
       {
         var item = await _itemPersistence.GetItemByIdAsync(id) ?? throw new Exception("Não foi possível encontrar o item a ser deletado.");
+        List<string> images = item.ImageURL.Split(";").ToList();
+
+        images.ForEach(image =>
+        {
+          this._azureService.DeleteModelImage(image);
+        });
 
         _generalPersistence.Delete(item);
 
