@@ -1,13 +1,19 @@
 using Seamstress.Domain;
 using Microsoft.EntityFrameworkCore;
+using Seamstress.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Seamstress.Persistence.Context
 {
-  public class SeamstressContext : DbContext //DBContext vem de using entityframeowrkcore
+  public class SeamstressContext : IdentityDbContext<User, Role, int,
+                                                    IdentityUserClaim<int>, UserRole,
+                                                    IdentityUserLogin<int>, IdentityRoleClaim<int>,
+                                                    IdentityUserToken<int>>
   {
     public SeamstressContext(DbContextOptions<SeamstressContext> options) : base(options) { }  // passa as options que recebemos na chamada construtor para a base() que é o DbContext
 
-    public DbSet<Order> Orders { get; set; } = null!;//tabela do contexto do banco de dados
+    public DbSet<Order> Orders { get; set; } = null!;
     public DbSet<OrderUser> OrdersUser { get; set; } = null!;
     public DbSet<Customer> Customers { get; set; } = null!;
     public DbSet<Sizings> Sizings { get; set; } = null!;
@@ -24,6 +30,22 @@ namespace Seamstress.Persistence.Context
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
+
+      modelBuilder.Entity<UserRole>(userRole =>
+        {
+          userRole.HasKey(UR => new { UR.UserId, UR.RoleId });
+
+          userRole.HasOne(UR => UR.Role)
+                  .WithMany(R => R.UserRoles)
+                  .HasForeignKey(ur => ur.RoleId)
+                  .IsRequired();
+
+          userRole.HasOne(UR => UR.User)
+                  .WithMany(U => U.UserRoles)
+                  .HasForeignKey(ur => ur.UserId)
+                  .IsRequired();
+        }
+      );
 
       modelBuilder.Entity<OrderUser>().HasKey(OU => new { OU.OrderId, OU.UserId });
       modelBuilder.Entity<ItemColor>().HasKey(IC => new { IC.ItemId, IC.ColorId });

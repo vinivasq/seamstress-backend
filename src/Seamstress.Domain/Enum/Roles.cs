@@ -1,6 +1,6 @@
 namespace Seamstress.Domain.Enum
 {
-  public enum UserRole
+  public enum Roles
   {
     Admin,
     Requester,

@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Seamstress.Domain.Identity
 {
-  public class Role : IdentityRole
+  public class Role : IdentityRole<int>
   {
-    public IEnumerable<User> Users { get; set; } = null!;
+    public IEnumerable<UserRole> UserRoles { get; set; } = null!;
   }
 }
