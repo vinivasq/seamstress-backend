@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
-using Seamstress.Domain;
 
 namespace Seamstress.API.Controllers
 {

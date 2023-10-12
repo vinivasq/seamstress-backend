@@ -25,7 +25,7 @@ namespace Seamstress.Persistence
       return await _context.Users.FirstAsync(user => user.Id == id);
     }
 
-    public async Task<User> GetUserByUsernamedAsync(string username)
+    public async Task<User> GetUserByUserNameAsync(string username)
     {
       return await _context.Users.FirstAsync(user => user.UserName == username.ToLower());
     }

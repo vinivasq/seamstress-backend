@@ -6,7 +6,7 @@ namespace Seamstress.Persistence.Contracts
   {
     Task<User[]> GetUsersAsync();
     Task<User> GetUserByIdAsync(int id);
-    Task<User> GetUserByUsernamedAsync(string username);
+    Task<User> GetUserByUserNameAsync(string username);
 
   }
 }

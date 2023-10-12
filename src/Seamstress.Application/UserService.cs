@@ -63,18 +63,18 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<UserUpdateDto> GetUserByUsernameAsync(string username)
+    public async Task<UserUpdateDto> GetUserByUserNameAsync(string username)
     {
       try
       {
-        var user = await _userPersistence.GetUserByUsernamedAsync(username)
+        var user = await _userPersistence.GetUserByUserNameAsync(username)
         ?? throw new Exception("Não foi possível localizar o usuário");
         return _mapper.Map<UserUpdateDto>(user);
       }
       catch (Exception ex)
       {
 
-        throw new Exception($"Erro ao recuperar o usuário pelo username. Erro: {ex.Message}");
+        throw new Exception($"Erro ao recuperar o usuário pelo nome de usuário. Erro: {ex.Message}");
       }
     }
 
@@ -82,7 +82,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var user = await _userPersistence.GetUserByUsernamedAsync(userUpdateDto.UserName)
+        var user = await _userPersistence.GetUserByUserNameAsync(userUpdateDto.UserName)
         ?? throw new Exception("Não foi possível localizar o usuário a atualizar");
 
         _mapper.Map(userUpdateDto, user);
@@ -93,7 +93,7 @@ namespace Seamstress.Application
         _generalPersistence.Update<User>(user);
 
         if (await _generalPersistence.SaveChangesAsync())
-          return _mapper.Map<UserUpdateDto>(await _userPersistence.GetUserByUsernamedAsync(user.UserName));
+          return _mapper.Map<UserUpdateDto>(await _userPersistence.GetUserByUserNameAsync(user.UserName));
 
         throw new Exception("Não foi possível atualizar o usuário");
       }

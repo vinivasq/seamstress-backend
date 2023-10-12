@@ -1,6 +1,7 @@
 using AutoMapper;
 using Seamstress.Application.Dtos;
 using Seamstress.Domain;
+using Seamstress.Domain.Identity;
 
 namespace Seamstress.Application.Helpers
 {
@@ -21,6 +22,9 @@ namespace Seamstress.Application.Helpers
         .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.ItemColors.Select(ic => ic.Color)))
         .ForMember(dest => dest.Fabrics, opt => opt.MapFrom(src => src.ItemFabrics.Select(ic => ic.Fabric)))
         .ForMember(dest => dest.Sizes, opt => opt.MapFrom(src => src.ItemSizes.Select(ic => ic.Size)));
+      CreateMap<User, UserDto>().ReverseMap();
+      CreateMap<User, UserLoginDto>().ReverseMap();
+      CreateMap<User, UserUpdateDto>().ReverseMap();
     }
   }
 }
