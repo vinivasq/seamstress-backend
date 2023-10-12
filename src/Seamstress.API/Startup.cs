@@ -6,6 +6,11 @@ using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Seamstress.API.Helpers;
+using Seamstress.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Seamstress.API
 {
@@ -22,12 +27,40 @@ namespace Seamstress.API
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddDbContext<SeamstressContext>(
-        context => context.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")));
+        context => context.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")!));
+
+      services.AddIdentityCore<User>(options =>
+      {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 8;
+      })
+        .AddRoles<Role>()
+        .AddRoleManager<RoleManager<Role>>()
+        .AddSignInManager<SignInManager<User>>()
+        .AddRoleValidator<RoleValidator<Role>>()
+        .AddEntityFrameworkStores<SeamstressContext>()
+        .AddDefaultTokenProviders();
+
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")!)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+          };
+        });
 
       services.AddControllers().AddJsonOptions(options =>
       {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
         options.JsonSerializerOptions.WriteIndented = true;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
       });
 
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -52,6 +85,10 @@ namespace Seamstress.API
       services.AddScoped<IItemFabricPersistence, ItemFabricPersistence>();
       services.AddScoped<IImageService, ImageService>();
       services.AddScoped<IAzureBlobService, AzureBlobService>();
+      services.AddScoped<IUserPersistence, UserPersistence>();
+      services.AddScoped<IUserService, UserService>();
+      services.AddScoped<ITokenService, TokenService>();
+
       services.AddCors();
       services.AddSwaggerGen(c =>
       {
