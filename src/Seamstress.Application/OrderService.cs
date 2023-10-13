@@ -166,6 +166,23 @@ namespace Seamstress.Application
       }
     }
 
+    public async Task<OrderOutputDto[]> GetOrdersByExecutorAsync(int userId)
+    {
+      try
+      {
+        var orders = await _orderPersistence.GetOrdersByExecutor(userId);
+
+        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
+
+        return ordersDto;
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
     public async Task<OrderOutputDto> GetOrderByIdAsync(int id)
     {
       try

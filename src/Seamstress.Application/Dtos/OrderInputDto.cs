@@ -33,6 +33,10 @@ namespace Seamstress.Application.Dtos
     [Required(ErrorMessage = "O Campo {0} não pode ficar vazio.")]
     public int CustomerId { get; set; }
 
+    [Display(Name = "Executor")]
+    [Required(ErrorMessage = "O Campo {0} não pode ficar vazio.")]
+    public int ExecutorId { get; set; }
+
     public IEnumerable<ItemOrderInputDto> ItemOrders { get; set; } = null!;
   }
 }

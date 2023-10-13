@@ -1,18 +1,24 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 
 namespace Seamstress.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class OrderController : ControllerBase
 {
 
   private readonly IOrderService _orderService;
-  public OrderController(IOrderService orderService)
+  private readonly IUserService _userService;
+
+  public OrderController(IOrderService orderService, IUserService userService)
   {
     this._orderService = orderService;
+    this._userService = userService;
   }
 
   [HttpGet]
@@ -20,7 +26,18 @@ public class OrderController : ControllerBase
   {
     try
     {
-      var orders = await _orderService.GetAllOrdersAsync();
+      OrderOutputDto[] orders;
+      var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
+
+      if (user.Role == "Executor")
+      {
+        orders = await _orderService.GetOrdersByExecutorAsync(User.GetUserId());
+      }
+      else
+      {
+        orders = await _orderService.GetAllOrdersAsync();
+      }
+
       if (orders == null) return NoContent();
 
       return Ok(orders);
