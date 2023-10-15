@@ -31,11 +31,11 @@ namespace Seamstress.API
 
       services.AddIdentityCore<User>(options =>
       {
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = true;
-        options.Password.RequireUppercase = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
         options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequiredLength = 8;
+        options.Password.RequiredLength = 6;
       })
         .AddRoles<Role>()
         .AddRoleManager<RoleManager<Role>>()

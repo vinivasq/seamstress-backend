@@ -47,7 +47,14 @@ namespace Seamstress.API.Controllers
         if (await _userService.UserExists(userDto.UserName)) return BadRequest("Usuário já existe");
 
         var user = await _userService.CreateAccountAsync(userDto) ?? throw new Exception("Não foi possível criar a conta.");
-        return Ok(user);
+        return Ok(new
+        {
+          Id = user.Id,
+          UserName = user.UserName,
+          FirstName = user.FirstName,
+          Token = _tokenService.CreateToken(user).Result
+        }
+        );
       }
       catch (Exception ex)
       {
