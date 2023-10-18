@@ -80,6 +80,7 @@ namespace Seamstress.API.Controllers
           Id = user.Id,
           UserName = user.UserName,
           FirstName = user.FirstName,
+          Role = user.Role,
           Token = _tokenService.CreateToken(user).Result
         }
         );
