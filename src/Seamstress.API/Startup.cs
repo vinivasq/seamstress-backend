@@ -90,7 +90,16 @@ namespace Seamstress.API
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<ITokenService, TokenService>();
 
-      services.AddCors();
+      services.AddCors(options =>
+        {
+          // this defines a CORS policy called "default"
+          options.AddPolicy("default", policy =>
+          {
+            policy.WithOrigins("https://seamstress-frontend-production.up.railway.app/")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+          });
+        });
       services.AddSwaggerGen(c =>
       {
         c.CustomSchemaIds(type => type.ToString());
@@ -127,12 +136,12 @@ namespace Seamstress.API
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-        app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seamstress.API v1"));
-      }
+      // if (env.IsDevelopment())
+      // {
+      //   app.UseDeveloperExceptionPage();
+      //   app.UseSwagger();
+      //   app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Seamstress.API v1"));
+      // }
 
       app.UseHttpsRedirection();
 
@@ -140,7 +149,7 @@ namespace Seamstress.API
 
       app.UseRouting();
 
-      app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+      app.UseCors("default");
 
       app.UseAuthentication();
       app.UseAuthorization();
