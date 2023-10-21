@@ -25,6 +25,7 @@ namespace Seamstress.Application.Helpers
       CreateMap<User, UserDto>().ReverseMap();
       CreateMap<User, UserLoginDto>().ReverseMap();
       CreateMap<User, UserUpdateDto>().ReverseMap();
+      CreateMap<User, UserOutputDto>().ReverseMap();
     }
   }
 }

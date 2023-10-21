@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
+using Seamstress.Domain.Identity;
 
 namespace Seamstress.API.Controllers
 {
@@ -38,6 +39,20 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("executors")]
+    public async Task<IActionResult> GetAllExecutors()
+    {
+      try
+      {
+        var users = await _userService.GetAllExecutorsAsync();
+        return Ok(users);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível retornar os usuários. Erro: {ex.Message}");
+      }
+    }
+
     [AllowAnonymous]
     [HttpPost("Register")]
     public async Task<IActionResult> Register(UserDto userDto)
@@ -52,6 +67,7 @@ namespace Seamstress.API.Controllers
           Id = user.Id,
           UserName = user.UserName,
           FirstName = user.FirstName,
+          Role = user.Role,
           Token = _tokenService.CreateToken(user).Result
         }
         );

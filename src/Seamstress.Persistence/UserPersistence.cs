@@ -15,19 +15,19 @@ namespace Seamstress.Persistence
 
     }
 
-    public async Task<User[]> GetUsersAsync()
+    public async Task<User[]> GetAllExecutorsAsync()
     {
-      return await _context.Users.ToArrayAsync();
+      return await _context.Users.Where(user => user.Role == Domain.Enum.Roles.Executor).AsNoTracking().ToArrayAsync();
     }
 
     public async Task<User> GetUserByIdAsync(int id)
     {
-      return await _context.Users.FirstAsync(user => user.Id == id);
+      return await _context.Users.AsNoTracking().FirstAsync(user => user.Id == id);
     }
 
     public async Task<User> GetUserByUserNameAsync(string username)
     {
-      return await _context.Users.FirstAsync(user => user.UserName == username.ToLower());
+      return await _context.Users.AsNoTracking().FirstAsync(user => user.UserName == username.ToLower());
     }
 
   }

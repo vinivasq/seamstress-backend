@@ -30,6 +30,44 @@ namespace Seamstress.Application
       this._generalPersistence = generalPersistence;
     }
 
+    public async Task<UserOutputDto[]> GetAllExecutorsAsync()
+    {
+      try
+      {
+        var users = await _userPersistence.GetAllExecutorsAsync() ?? throw new Exception("Nenhum usuário encontrado");
+
+        List<UserOutputDto> lstUsersDto = _mapper.Map<UserOutputDto[]>(users).ToList();
+
+        lstUsersDto.ForEach(userDto =>
+        {
+          userDto.Name = users.Where(user => user.Id == userDto.Id).Select(user => $"{user.FirstName} {user.LastName}").First();
+        });
+
+        return lstUsersDto.ToArray();
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception($"Erro ao recuperar os usuáios. Erro {ex.Message}");
+      }
+    }
+
+
+    public async Task<UserUpdateDto> GetUserByUserNameAsync(string username)
+    {
+      try
+      {
+        var user = await _userPersistence.GetUserByUserNameAsync(username)
+        ?? throw new Exception("Não foi possível localizar o usuário");
+        return _mapper.Map<UserUpdateDto>(user);
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception($"Erro ao recuperar o usuário pelo nome de usuário. Erro: {ex.Message}");
+      }
+    }
+
     public async Task<SignInResult> CheckUserPasswordAsync(UserUpdateDto userUpdateDto, string password)
     {
       try
@@ -60,21 +98,6 @@ namespace Seamstress.Application
       {
 
         throw new Exception($"Erro ao criar a conta. Erro: {ex.Message}");
-      }
-    }
-
-    public async Task<UserUpdateDto> GetUserByUserNameAsync(string username)
-    {
-      try
-      {
-        var user = await _userPersistence.GetUserByUserNameAsync(username)
-        ?? throw new Exception("Não foi possível localizar o usuário");
-        return _mapper.Map<UserUpdateDto>(user);
-      }
-      catch (Exception ex)
-      {
-
-        throw new Exception($"Erro ao recuperar o usuário pelo nome de usuário. Erro: {ex.Message}");
       }
     }
 
