@@ -25,7 +25,7 @@ namespace Seamstress.Application
       this._mapper = mapper;
       this._configuration = configuration;
       this._userManager = userManager;
-      this._key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[Environment.GetEnvironmentVariable("TOKEN_KEY")]));
+      this._key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")!));
     }
 
     public async Task<string> CreateToken(UserUpdateDto userUpdateDto)

@@ -90,16 +90,7 @@ namespace Seamstress.API
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<ITokenService, TokenService>();
 
-      services.AddCors(options =>
-        {
-          // this defines a CORS policy called "default"
-          options.AddPolicy("default", policy =>
-          {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-          });
-        });
+      services.AddCors();
       services.AddSwaggerGen(c =>
       {
         c.CustomSchemaIds(type => type.ToString());
@@ -149,7 +140,7 @@ namespace Seamstress.API
 
       app.UseRouting();
 
-      app.UseCors("default");
+      app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
       app.UseAuthentication();
       app.UseAuthorization();
