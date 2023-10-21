@@ -95,7 +95,7 @@ namespace Seamstress.API
           // this defines a CORS policy called "default"
           options.AddPolicy("default", policy =>
           {
-            policy.WithOrigins("https://seamstress-frontend-production.up.railway.app/")
+            policy.WithOrigins("https://seamstress-frontend-production.up.railway.app/*")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
           });
