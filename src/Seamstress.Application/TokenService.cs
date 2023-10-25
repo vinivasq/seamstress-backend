@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -62,6 +63,35 @@ namespace Seamstress.Application
 
         throw new Exception($"Erro ao gerar token. Erro: {ex.Message}");
       }
+    }
+
+    public bool ValidateToken(string token)
+    {
+      try
+      {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var validationParameters = GetValidationParameters();
+
+        IPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+        return true;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
+    private TokenValidationParameters GetValidationParameters()
+    {
+      return new TokenValidationParameters()
+      {
+        ValidateLifetime = true,
+        ValidateAudience = false, // Because there is no audiance in the generated token
+        ValidateIssuer = false,   // Because there is no issuer in the generated token
+        ValidIssuer = "Sample",
+        ValidAudience = "Sample",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["TokenKey"]))
+      };
     }
   }
 }

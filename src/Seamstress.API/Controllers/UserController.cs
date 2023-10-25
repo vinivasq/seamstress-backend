@@ -1,10 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
-using Seamstress.Domain.Identity;
 
 namespace Seamstress.API.Controllers
 {
@@ -125,6 +123,21 @@ namespace Seamstress.API.Controllers
       {
 
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o usuário. Erro: {ex.Message}");
+      }
+    }
+
+    [AllowAnonymous]
+    [HttpGet("Validate/{token}")]
+    public IActionResult ValidateToken(string token)
+    {
+      try
+      {
+        return Ok(this._tokenService.ValidateToken(token));
+      }
+      catch (Exception ex)
+      {
+
+        return this.StatusCode(StatusCodes.Status401Unauthorized, $"Não foi possível autenticar o usuário. Erro: {ex.Message}");
       }
     }
 
