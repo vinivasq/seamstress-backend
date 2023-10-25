@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
 using Seamstress.Domain;
 
 namespace Seamstress.API.Controllers
 {
+  [Authorize]
   [ApiController]
   [Route("api/[controller]")]
   public class FabricController : ControllerBase
