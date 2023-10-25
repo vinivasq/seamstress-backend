@@ -90,7 +90,7 @@ namespace Seamstress.Application
         ValidateIssuer = false,   // Because there is no issuer in the generated token
         ValidIssuer = "Sample",
         ValidAudience = "Sample",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["TokenKey"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")!))
       };
     }
   }
