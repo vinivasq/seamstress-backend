@@ -20,6 +20,10 @@ namespace Seamstress.Application.Dtos
     [DataType(DataType.DateTime, ErrorMessage = "{0} inválido")]
     public DateTime Deadline { get; set; }
 
+    [Display(Name = "Data do pedido")]
+    [Required(ErrorMessage = "O Campo {0} não pode ficar vazio.")]
+    [DataType(DataType.DateTime, ErrorMessage = "{0} inválido")]
+    public DateTime OrderedAt { get; set; }
 
     [Display(Name = "Valor Total")]
     [Required(ErrorMessage = "O Campo {0} não pode ficar vazio.")]
