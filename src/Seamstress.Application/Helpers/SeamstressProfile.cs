@@ -10,6 +10,7 @@ namespace Seamstress.Application.Helpers
     public SeamstressProfile()
     {
       CreateMap<Customer, CustomerDto>().ReverseMap();
+      CreateMap<Customer, CustomerOutputDto>();
       CreateMap<OrderInputDto, Order>();
       CreateMap<Order, OrderOutputDto>();
       CreateMap<ItemOrderInputDto, ItemOrder>();
