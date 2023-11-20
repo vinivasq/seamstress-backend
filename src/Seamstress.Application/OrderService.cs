@@ -1,4 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
@@ -13,16 +12,19 @@ namespace Seamstress.Application
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IOrderPersistence _orderPersistence;
     private readonly IItemPersistence _itemPersistence;
+    private readonly IUserPersistence _userPersistence;
     private readonly IMapper _mapper;
 
     public OrderService(IGeneralPersistence generalPersistence,
                         IOrderPersistence orderPersistence,
                         IItemPersistence itemPersistence,
+                        IUserPersistence userPersistence,
                         IMapper mapper
                         )
     {
       this._orderPersistence = orderPersistence;
       this._itemPersistence = itemPersistence;
+      this._userPersistence = userPersistence;
       this._generalPersistence = generalPersistence;
       this._mapper = mapper;
     }
@@ -188,8 +190,10 @@ namespace Seamstress.Application
       try
       {
         var order = await _orderPersistence.GetOrderByIdAsync(id);
-
         var orderDto = _mapper.Map<OrderOutputDto>(order);
+
+        orderDto.Executor = _mapper.Map<UserOutputDto>(await _userPersistence.GetUserByIdAsync(order.ExecutorId));
+        orderDto.Executor.Name = $"{orderDto.Executor.FirstName} {orderDto.Executor.LastName}";
 
         return orderDto;
       }
