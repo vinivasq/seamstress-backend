@@ -13,7 +13,7 @@ namespace Seamstress.Application.Dtos
     public DateTime Deadline { get; set; }
     public decimal Total { get; set; }
     public Step Step { get; set; }
-    public Customer Customer { get; set; } = null!;
+    public CustomerOutputDto Customer { get; set; } = null!;
     public IEnumerable<ItemOrderOutputDto> ItemOrders { get; set; } = null!;
   }
 }
