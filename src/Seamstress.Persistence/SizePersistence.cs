@@ -19,7 +19,7 @@ namespace Seamstress.Persistence
     {
       IQueryable<Size> query = _context.Sizes;
 
-      return await query.AsNoTracking().ToArrayAsync();
+      return await query.AsNoTracking().OrderBy(x => x.Id).ToArrayAsync();
 
     }
 
