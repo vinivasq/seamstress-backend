@@ -6,6 +6,7 @@ namespace Seamstress.Domain.Enum
     Corte,
     Fechamento,
     Finalização,
-    Pronto
+    Pronto,
+    Entregue
   }
 }

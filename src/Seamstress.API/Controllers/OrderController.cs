@@ -48,6 +48,33 @@ public class OrderController : ControllerBase
     }
   }
 
+  [HttpGet("Pending")]
+  public async Task<IActionResult> GetPending()
+  {
+    try
+    {
+      OrderOutputDto[] orders;
+      var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
+
+      if (user.Role == "Executor")
+      {
+        orders = await _orderService.GetPendingOrdersByExecutorAsync(User.GetUserId());
+      }
+      else
+      {
+        orders = await _orderService.GetPendingOrdersAsync();
+      }
+
+      if (orders == null) return NoContent();
+
+      return Ok(orders);
+    }
+    catch (Exception ex)
+    {
+      return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar recuperar pedidos. Erro: {ex.Message}");
+    }
+  }
+
   [HttpGet("{id}")]
   public async Task<IActionResult> GetById(int id)
   {

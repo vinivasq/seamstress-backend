@@ -57,5 +57,37 @@ namespace Seamstress.Persistence
 
       return await query.AsNoTracking().FirstAsync();
     }
+
+    public async Task<Order[]> GetPendingOrdersAsync()
+    {
+      IQueryable<Order> query = _context.Orders;
+
+      query = query.Include(order => order.Customer).ThenInclude(customer => customer.Sizings);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.AditionalSizing);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item.Set);
+      query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
+      query = query.OrderBy(order => order.Deadline);
+
+      return await query.AsNoTracking().ToArrayAsync();
+    }
+
+    public async Task<Order[]> GetPendingOrdersByExecutor(int userId)
+    {
+      IQueryable<Order> query = _context.Orders;
+
+      query = query.Include(order => order.Customer).ThenInclude(customer => customer.Sizings);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.AditionalSizing);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item.Set);
+      query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
+      query = query.OrderBy(order => order.Deadline);
+
+      return await query.Where(order => order.ExecutorId == userId).AsNoTracking().ToArrayAsync();
+    }
   }
 }

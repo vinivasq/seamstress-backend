@@ -10,7 +10,9 @@ namespace Seamstress.Application.Contracts
     Task<bool> DeleteOrder(int id);
 
     Task<OrderOutputDto[]> GetAllOrdersAsync();
+    Task<OrderOutputDto[]> GetPendingOrdersAsync();
     Task<OrderOutputDto[]> GetOrdersByExecutorAsync(int userId);
+    Task<OrderOutputDto[]> GetPendingOrdersByExecutorAsync(int userId);
     Task<OrderOutputDto> GetOrderByIdAsync(int id);
   }
 }

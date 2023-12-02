@@ -22,12 +22,18 @@ namespace Seamstress.Persistence
 
     public async Task<User> GetUserByIdAsync(int id)
     {
-      return await _context.Users.AsNoTracking().FirstAsync(user => user.Id == id);
+      User query = await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == id)
+        ?? throw new Exception($"Não foi encontrado um usuário de Id: {id}");
+
+      return query;
     }
 
     public async Task<User> GetUserByUserNameAsync(string username)
     {
-      return await _context.Users.AsNoTracking().FirstAsync(user => user.UserName == username.ToLower());
+      User query = await _context.Users.AsNoTracking().FirstOrDefaultAsync(user => user.UserName == username.ToLower())
+        ?? throw new Exception($"Não foi encontrado um usuário de com o nomde de usuário: {username}");
+
+      return query;
     }
 
   }
