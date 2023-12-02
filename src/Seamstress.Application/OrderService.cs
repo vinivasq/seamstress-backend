@@ -168,6 +168,42 @@ namespace Seamstress.Application
       }
     }
 
+
+    public async Task<OrderOutputDto[]> GetPendingOrdersAsync()
+    {
+      try
+      {
+        var orders = await _orderPersistence.GetPendingOrdersAsync();
+
+        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
+
+        return ordersDto;
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
+
+    public async Task<OrderOutputDto[]> GetPendingOrdersByExecutorAsync(int userId)
+    {
+      try
+      {
+        var orders = await _orderPersistence.GetPendingOrdersByExecutor(userId);
+
+        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
+
+        return ordersDto;
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
     public async Task<OrderOutputDto[]> GetOrdersByExecutorAsync(int userId)
     {
       try
