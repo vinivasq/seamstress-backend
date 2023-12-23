@@ -11,10 +11,17 @@ namespace Seamstress.Application.Dtos
     [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
     public string Name { get; set; } = null!;
 
-
     [Display(Name = "Endereço")]
     [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
     public string Address { get; set; } = null!;
+
+    [Display(Name = "Cidade")]
+    [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
+    public string City { get; set; } = null!;
+
+    [Display(Name = "Bairro")]
+    [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
+    public string Neighborhood { get; set; } = null!;
 
     [Display(Name = "Número")]
     [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]

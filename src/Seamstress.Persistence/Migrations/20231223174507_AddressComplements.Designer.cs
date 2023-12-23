@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Seamstress.Persistence.Context;
@@ -11,9 +12,10 @@ using Seamstress.Persistence.Context;
 namespace Seamstress.Persistence.Migrations
 {
     [DbContext(typeof(SeamstressContext))]
-    partial class SeamstressContextModelSnapshot : ModelSnapshot
+    [Migration("20231223174507_AddressComplements")]
+    partial class AddressComplements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,8 +1,9 @@
-using System.Reflection.Metadata;
-using System.Resources;
+using System.ComponentModel;
+using System.Net.Http.Json;
 using AutoMapper;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
+using Seamstress.Application.ResponseModels;
 using Seamstress.Domain;
 using Seamstress.Persistence.Contracts;
 
@@ -14,15 +15,18 @@ namespace Seamstress.Application
     private readonly ICustomerPersistence _customerPersistence;
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IMapper _mapper;
+    private readonly HttpClient _httpClient;
 
     public CustomerService(IGeneralPersistence generalPersistence,
                             ICustomerPersistence customerPersistence,
-                            IMapper mapper
+                            IMapper mapper,
+                            HttpClient httpClient
                           )
     {
       this._generalPersistence = generalPersistence;
       this._customerPersistence = customerPersistence;
       this._mapper = mapper;
+      this._httpClient = httpClient;
     }
 
     public async Task<CustomerDto> AddCustomer(CustomerDto model)
@@ -53,9 +57,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var customer = await _customerPersistence.GetCustomerByIdAsync(id);
-        if (customer == null) throw new Exception("Não foi possível encontrar o cliente");
-
+        var customer = await _customerPersistence.GetCustomerByIdAsync(id) ?? throw new Exception("Não foi possível encontrar o cliente");
         model.Id = customer.Id;
 
         if (model.Sizings != null)
@@ -93,9 +95,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var customer = await _customerPersistence.GetCustomerByIdAsync(id);
-        if (customer == null) throw new Exception("Não foi posível encontrar o cliente");
-
+        var customer = await _customerPersistence.GetCustomerByIdAsync(id) ?? throw new Exception("Não foi posível encontrar o cliente");
         _generalPersistence.Delete(customer);
 
         return await _generalPersistence.SaveChangesAsync();
@@ -132,6 +132,49 @@ namespace Seamstress.Application
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> AcertaEnderecos()
+    {
+      try
+      {
+        IEnumerable<Customer> query = await _customerPersistence.GetCustomersAsync();
+
+        List<Customer> customers = query.ToList();
+
+        foreach (Customer customer in customers)
+        {
+          HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync($"https://viacep.com.br/ws/{customer.Cep}/json/");
+          ViacepResponse response = await httpResponseMessage.Content.ReadFromJsonAsync<ViacepResponse>()
+            ?? throw new Exception($"Erro ao desserializar cep do cliente: {customer.Id}");
+
+          if (httpResponseMessage.IsSuccessStatusCode)
+          {
+            if (response.erro != null)
+            {
+              customer.City = "Não encontrada";
+              customer.Neighborhood = "Não encontrado";
+
+              _generalPersistence.Update<Customer>(customer);
+              continue;
+            }
+
+            customer.City = response.localidade == "" ? "Não encontrada" : response.localidade;
+            customer.Neighborhood = response.bairro == "" ? "Não encontrado" : response.bairro;
+
+            _generalPersistence.Update<Customer>(customer);
+          }
+          else throw new Exception($"Erro na requisição viacep: STATUS -> {httpResponseMessage.StatusCode}");
+
+        }
+
+        if (_generalPersistence.SaveChanges()) return true;
+        return false;
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
