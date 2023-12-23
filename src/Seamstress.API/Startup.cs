@@ -90,8 +90,6 @@ namespace Seamstress.API
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<ITokenService, TokenService>();
 
-      services.AddHttpClient<CustomerService>();
-
       services.AddCors();
       services.AddSwaggerGen(c =>
       {
