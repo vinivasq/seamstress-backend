@@ -11,5 +11,7 @@ namespace Seamstress.Application.Contracts
 
     public Task<CustomerDto[]> GetCustomersAsync();
     public Task<CustomerDto> GetCustomerByIdAsync(int id);
+
+    public Task<bool> AcertaEnderecos();
   }
 }

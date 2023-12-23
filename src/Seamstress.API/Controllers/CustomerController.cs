@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
@@ -15,6 +16,19 @@ namespace Seamstress.API.Controllers
     public CustomerController(ICustomerService customerService)
     {
       this._customerService = customerService;
+    }
+
+    [HttpGet("acerta")]
+    public async Task<IActionResult> AcertaEnderecos()
+    {
+      try
+      {
+        return await _customerService.AcertaEnderecos() ? Ok(JsonSerializer.Serialize("alterados")) : BadRequest(JsonSerializer.Serialize("não deu"));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível retornar os clientes. Erro: {ex.Message}");
+      }
     }
 
     [HttpGet]
