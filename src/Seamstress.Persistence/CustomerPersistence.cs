@@ -20,7 +20,7 @@ namespace Seamstress.Persistence
       IQueryable<Customer> query = _context.Customers;
 
       query = query.Include(customer => customer.Sizings);
-      query = query.OrderBy(customer => customer.Name);
+      query = query.OrderBy(customer => customer.Name.Trim().ToLower());
 
       return await query.AsNoTracking().ToArrayAsync();
     }
