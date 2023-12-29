@@ -15,12 +15,13 @@ namespace Seamstress.Persistence
       this._context = context;
     }
 
-    public async Task<Customer[]> GetCustomersAsync()
+    public async Task<Customer[]> GetCustomersAsync(string term)
     {
       IQueryable<Customer> query = _context.Customers;
 
       query = query.Include(customer => customer.Sizings);
-      query = query.OrderBy(customer => customer.Name.Trim().ToLower());
+      query = query.Where(customer => customer.Name.ToLower().Contains(term.ToLower()))
+                   .OrderBy(customer => customer.Name.Trim().ToLower());
 
       return await query.AsNoTracking().ToArrayAsync();
     }

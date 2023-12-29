@@ -27,7 +27,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var customers = await _customerPersistence.GetCustomersAsync();
+        var customers = await _customerPersistence.GetCustomersAsync("");
         if (customers.Where(x => x.CPF_CNPJ == model.CPF_CNPJ).FirstOrDefault() != null)
           throw new Exception("Cliente com CPF/CNPJ já existente");
 
@@ -104,11 +104,11 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<CustomerDto[]> GetCustomersAsync()
+    public async Task<CustomerDto[]> GetCustomersAsync(string term)
     {
       try
       {
-        var customers = await _customerPersistence.GetCustomersAsync();
+        var customers = await _customerPersistence.GetCustomersAsync(term);
 
         return _mapper.Map<CustomerDto[]>(customers);
       }

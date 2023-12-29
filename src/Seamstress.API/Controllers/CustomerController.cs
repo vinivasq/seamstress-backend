@@ -18,12 +18,13 @@ namespace Seamstress.API.Controllers
       this._customerService = customerService;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpGet()]
+    public async Task<IActionResult> Get([FromQuery] string? term = "")
     {
       try
       {
-        var customers = await _customerService.GetCustomersAsync();
+        term ??= "";
+        var customers = await _customerService.GetCustomersAsync(term);
         if (customers == null) return NoContent();
 
         return Ok(customers);
