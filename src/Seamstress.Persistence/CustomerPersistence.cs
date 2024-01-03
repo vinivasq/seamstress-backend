@@ -35,5 +35,14 @@ namespace Seamstress.Persistence
 
       return await query.AsNoTracking().FirstAsync();
     }
+
+    public async Task<Customer> GetCustomerByPKAsync(string CPF_CNPJ)
+    {
+      IQueryable<Customer> query = _context.Customers;
+
+      query = query.Where(customer => customer.CPF_CNPJ == CPF_CNPJ);
+
+      return await query.AsNoTracking().FirstAsync();
+    }
   }
 }

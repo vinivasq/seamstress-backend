@@ -27,9 +27,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var customers = await _customerPersistence.GetCustomersAsync("");
-        if (customers.Where(x => x.CPF_CNPJ == model.CPF_CNPJ).FirstOrDefault() != null)
-          throw new Exception("Cliente com CPF/CNPJ já existente");
+        if (await _customerPersistence.GetCustomerByPKAsync(model.CPF_CNPJ) != null) throw new Exception("Cliente com CPF/CNPJ já existente");
 
         var customer = _mapper.Map<Customer>(model);
         _generalPersistence.Add<Customer>(customer);
