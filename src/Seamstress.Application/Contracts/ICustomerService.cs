@@ -1,4 +1,6 @@
 using Seamstress.Application.Dtos;
+using Seamstress.Domain;
+using Seamstress.Persistence.Helpers;
 
 namespace Seamstress.Application.Contracts
 {
@@ -9,7 +11,7 @@ namespace Seamstress.Application.Contracts
     public Task<bool> DeleteCustomer(int id);
 
 
-    public Task<CustomerDto[]> GetCustomersAsync(string term);
+    public Task<PageList<CustomerDto>> GetCustomersAsync(PageParams pageParams);
     public Task<CustomerDto> GetCustomerByIdAsync(int id);
   }
 }

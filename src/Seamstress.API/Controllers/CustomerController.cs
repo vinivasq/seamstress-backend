@@ -1,8 +1,8 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
+using Seamstress.Persistence.Helpers;
 
 namespace Seamstress.API.Controllers
 {
@@ -19,13 +19,12 @@ namespace Seamstress.API.Controllers
     }
 
     [HttpGet()]
-    public async Task<IActionResult> Get([FromQuery] string? term = "")
+    public async Task<IActionResult> Get([FromQuery] PageParams pageParams)
     {
       try
       {
-        term ??= "";
-        var customers = await _customerService.GetCustomersAsync(term);
-        if (customers == null) return NoContent();
+        var customers = await _customerService.GetCustomersAsync(pageParams);
+        if (customers.Count == 0) return NoContent();
 
         return Ok(customers);
       }
