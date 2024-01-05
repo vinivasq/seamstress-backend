@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Persistence.Helpers;
@@ -25,6 +26,8 @@ namespace Seamstress.API.Controllers
       {
         var customers = await _customerService.GetCustomersAsync(pageParams);
         if (customers.Count == 0) return NoContent();
+
+        Response.AddPagination(customers.CurrentPage, customers.PageSize, customers.TotalCount, customers.TotalPages);
 
         return Ok(customers);
       }
