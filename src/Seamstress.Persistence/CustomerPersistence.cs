@@ -43,7 +43,7 @@ namespace Seamstress.Persistence
 
       query = query.Where(customer => customer.CPF_CNPJ == CPF_CNPJ);
 
-      return await query.AsNoTracking().FirstAsync();
+      return await query.AsNoTracking().FirstOrDefaultAsync();
     }
   }
 }
