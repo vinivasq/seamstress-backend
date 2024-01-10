@@ -3,6 +3,7 @@ using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Persistence.Contracts;
+using Seamstress.Persistence.Helpers;
 
 namespace Seamstress.Application
 {
@@ -27,9 +28,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var customers = await _customerPersistence.GetCustomersAsync("");
-        if (customers.Where(x => x.CPF_CNPJ == model.CPF_CNPJ).FirstOrDefault() != null)
-          throw new Exception("Cliente com CPF/CNPJ já existente");
+        if (await _customerPersistence.GetCustomerByPKAsync(model.CPF_CNPJ) != null) throw new Exception("Cliente com CPF/CNPJ já existente");
 
         var customer = _mapper.Map<Customer>(model);
         _generalPersistence.Add<Customer>(customer);
@@ -104,13 +103,23 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<CustomerDto[]> GetCustomersAsync(string term)
+    public async Task<PageList<CustomerDto>> GetCustomersAsync(PageParams pageParams)
     {
       try
       {
-        var customers = await _customerPersistence.GetCustomersAsync(term);
+        PageList<Customer> customers = await _customerPersistence.GetCustomersAsync(pageParams);
 
-        return _mapper.Map<CustomerDto[]>(customers);
+        PageList<CustomerDto> result = new()
+        {
+          CurrentPage = customers.CurrentPage,
+          TotalPages = customers.TotalPages,
+          PageSize = customers.PageSize,
+          TotalCount = customers.TotalCount
+        };
+
+        result.AddRange(_mapper.Map<PageList<CustomerDto>>(customers));
+
+        return result;
       }
       catch (Exception ex)
       {
