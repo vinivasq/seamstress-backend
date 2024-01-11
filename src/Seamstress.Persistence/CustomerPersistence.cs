@@ -30,7 +30,7 @@ namespace Seamstress.Persistence
       if (terms.Count > 0)
       {
         Expression<Func<Customer, bool>> expression = customer =>
-            EF.Functions.Unaccent(customer.Name.ToLower()).Contains(terms[0].ToLower());
+            EF.Functions.Unaccent(customer.Name.ToLower()).StartsWith(terms[0].ToLower());
 
         terms.ForEach(term =>
         {
