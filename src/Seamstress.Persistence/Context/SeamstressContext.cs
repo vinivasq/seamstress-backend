@@ -31,6 +31,8 @@ namespace Seamstress.Persistence.Context
     {
       base.OnModelCreating(modelBuilder);
 
+      modelBuilder.HasPostgresExtension("unaccent");
+
       modelBuilder.Entity<UserRole>(userRole =>
         {
           userRole.HasKey(UR => new { UR.UserId, UR.RoleId });
