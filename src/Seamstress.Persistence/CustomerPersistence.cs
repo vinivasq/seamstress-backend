@@ -4,6 +4,8 @@ using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Seamstress.Persistence.Helpers;
 using System.Text;
+using System.Linq.Expressions;
+using static Seamstress.Persistence.Helpers.CombineEpressions;
 
 
 namespace Seamstress.Persistence
@@ -19,12 +21,30 @@ namespace Seamstress.Persistence
 
     public async Task<PageList<Customer>> GetCustomersAsync(PageParams pageParams)
     {
-      IQueryable<Customer> query = _context.Customers;
-      string term = new(pageParams.Term.Normalize(NormalizationForm.FormD).Where(char.IsLetter).ToArray());
+      string normalizedTerm = new(pageParams.Term.Normalize(NormalizationForm.FormD).ToArray());
+      List<string> terms = normalizedTerm.Split(" ").ToList();
 
+      IQueryable<Customer> query = _context.Customers;
       query = query.Include(customer => customer.Sizings);
-      query = query.Where(customer => EF.Functions.Unaccent(customer.Name.ToLower()).Contains(term.ToLower()))
-                   .OrderBy(customer => customer.Name.Trim().ToLower()).AsNoTracking();
+
+      if (terms.Count > 0)
+      {
+        Expression<Func<Customer, bool>> expression = customer =>
+            EF.Functions.Unaccent(customer.Name.ToLower()).Contains(terms[0].ToLower());
+
+        terms.ForEach(term =>
+        {
+          Expression<Func<Customer, bool>> termExpression = customer =>
+              EF.Functions.Unaccent(customer.Name.ToLower()).Contains(term.ToLower());
+
+          expression = CombineExpressions(expression, termExpression);
+
+        });
+
+        query = query.Where(expression);
+      }
+
+      query = query.OrderBy(customer => customer.Name.Trim().ToLower()).AsNoTracking();
 
       return await PageList<Customer>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
     }
