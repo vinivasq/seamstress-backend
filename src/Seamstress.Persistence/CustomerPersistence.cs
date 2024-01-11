@@ -3,6 +3,7 @@ using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Seamstress.Persistence.Helpers;
+using System.Text;
 
 
 namespace Seamstress.Persistence
@@ -19,9 +20,10 @@ namespace Seamstress.Persistence
     public async Task<PageList<Customer>> GetCustomersAsync(PageParams pageParams)
     {
       IQueryable<Customer> query = _context.Customers;
+      string term = new(pageParams.Term.Normalize(NormalizationForm.FormD).Where(char.IsLetter).ToArray());
 
       query = query.Include(customer => customer.Sizings);
-      query = query.Where(customer => customer.Name.ToLower().Contains(pageParams.Term.ToLower()))
+      query = query.Where(customer => EF.Functions.Unaccent(customer.Name.ToLower()).Contains(term.ToLower()))
                    .OrderBy(customer => customer.Name.Trim().ToLower()).AsNoTracking();
 
       return await PageList<Customer>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
