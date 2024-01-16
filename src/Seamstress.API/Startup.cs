@@ -28,7 +28,7 @@ namespace Seamstress.API
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddDbContext<SeamstressContext>(
-        context => context.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING")!));
+        context => context.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE_PRIVATE_URL")!));
 
       services.AddIdentityCore<User>(options =>
       {
