@@ -23,7 +23,7 @@ namespace Seamstress.Persistence.Helpers
     public static async Task<PageList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
     {
       int count = await source.CountAsync();
-      List<T> items = await source.Skip((pageNumber - 1) * pageSize) // Basicamente faz a função de pular os itens das paginas anteriores (-1 para acessar o indice correto da pagina)
+      List<T> items = await source.Skip(pageNumber * pageSize) // Basicamente faz a função de pular os itens das paginas anteriores
                               .Take(pageSize).ToListAsync(); // Pega a quantidade de itens desejados e retorna como uma lista
 
       return new PageList<T>(items, count, pageNumber, pageSize);
