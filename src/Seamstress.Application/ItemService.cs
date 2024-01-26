@@ -75,9 +75,9 @@ namespace Seamstress.Application
         var fabricsToAdd = modelFabrics.Except(itemFabrics).ToList();
         var sizesToAdd = modelSizes.Except(itemSizes).ToList();
 
-        if (colorsToRemove.Count() > 0) _generalPersistence.DeleteRange(colorsToRemove);
-        if (fabricsToRemove.Count() > 0) _generalPersistence.DeleteRange(fabricsToRemove);
-        if (sizesToRemove.Count() > 0) _generalPersistence.DeleteRange(sizesToRemove);
+        if (colorsToRemove.Length > 0) _generalPersistence.DeleteRange(colorsToRemove);
+        if (fabricsToRemove.Length > 0) _generalPersistence.DeleteRange(fabricsToRemove);
+        if (sizesToRemove.Length > 0) _generalPersistence.DeleteRange(sizesToRemove);
 
         if (colorsToAdd.Count > 0) colorsToAdd.ForEach((colorId) =>
         {
@@ -103,10 +103,13 @@ namespace Seamstress.Application
 
         if (sizesToAdd.Count > 0) sizesToAdd.ForEach((sizeId) =>
         {
+          ItemSize modelItemSize = model.ItemSizes.First(x => x.SizeId == sizeId);
+
           ItemSize size = new()
           {
             ItemId = item.Id,
-            SizeId = sizeId
+            SizeId = sizeId,
+            Measurements = modelItemSize.Measurements
           };
 
           _generalPersistence.Add(size);
@@ -117,9 +120,41 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id);
+          List<ItemSizeMeasurement> modelMeasurements = model.ItemSizes.Where(x => x.Measurements != null && x.Id > 0).SelectMany(x => x.Measurements).ToList();
 
-          return _mapper.Map<ItemOutputDto>(itemResponse);
+          var itemFromDB = await _itemPersistence.GetItemByIdAsync(id);
+
+          List<ItemSizeMeasurement> itemMeasurements = itemFromDB.ItemSizes.Where(x => x.Measurements != null).SelectMany(x => x.Measurements).ToList();
+
+          ItemSizeMeasurement[] measurementsToRemove = itemMeasurements.Where(itemMeasurement => !modelMeasurements.Any(modelMeasurement => modelMeasurement.Id == itemMeasurement.Id)).ToArray();
+
+
+          if (modelMeasurements.Count > 0)
+          {
+            modelMeasurements.ForEach(measurement =>
+            {
+              if (measurement.Id == 0)
+              {
+                _generalPersistence.Add(measurement);
+              }
+              else
+              {
+                _generalPersistence.Update(measurement);
+              }
+            });
+          }
+
+          if (measurementsToRemove.Length > 0)
+            _generalPersistence.DeleteRange(measurementsToRemove);
+
+          if (await _generalPersistence.SaveChangesAsync())
+          {
+            var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id);
+
+            return _mapper.Map<ItemOutputDto>(itemResponse);
+          }
+          throw new Exception("Não foi possível atualizar as medidas do item.");
+
         }
 
         throw new Exception("Não foi possível atualizar o item");
