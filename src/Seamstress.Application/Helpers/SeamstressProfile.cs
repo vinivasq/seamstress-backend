@@ -17,12 +17,12 @@ namespace Seamstress.Application.Helpers
       CreateMap<ItemOrder, ItemOrderOutputDto>()
         .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
         .ForMember(dest => dest.Fabric, opt => opt.MapFrom(src => src.Fabric))
-        .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size));
+        .ForMember(dest => dest.ItemSize, opt => opt.MapFrom(src => src.ItemSize));
       CreateMap<ItemInputDto, Item>();
+      CreateMap<ItemSize, ItemSizeDto>();
       CreateMap<Item, ItemOutputDto>()
         .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.ItemColors.Select(ic => ic.Color)))
-        .ForMember(dest => dest.Fabrics, opt => opt.MapFrom(src => src.ItemFabrics.Select(ic => ic.Fabric)))
-        .ForMember(dest => dest.Sizes, opt => opt.MapFrom(src => src.ItemSizes.Select(ic => ic.Size)));
+        .ForMember(dest => dest.Fabrics, opt => opt.MapFrom(src => src.ItemFabrics.Select(ic => ic.Fabric)));
       CreateMap<User, UserDto>().ReverseMap();
       CreateMap<User, UserLoginDto>().ReverseMap();
       CreateMap<User, UserUpdateDto>().ReverseMap();

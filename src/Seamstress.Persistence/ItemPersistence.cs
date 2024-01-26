@@ -21,6 +21,7 @@ namespace Seamstress.Persistence
       query = query.Include(item => item.ItemColors).ThenInclude(IC => IC.Color);
       query = query.Include(item => item.ItemFabrics).ThenInclude(IF => IF.Fabric);
       query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Size);
+      query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Measurements);
       query = query.Include(item => item.Set);
       query = query.OrderBy(item => item.Id);
 
@@ -33,6 +34,7 @@ namespace Seamstress.Persistence
       query = query.Include(item => item.ItemColors).ThenInclude(IC => IC.Color);
       query = query.Include(item => item.ItemFabrics).ThenInclude(IF => IF.Fabric);
       query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Size);
+      query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Measurements);
       query = query.Include(item => item.Set);
       query = query.Where(x => x.Id == id);
 

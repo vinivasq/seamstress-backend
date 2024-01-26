@@ -58,9 +58,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var order = await _orderPersistence.GetOrderByIdAsync(id);
-        if (order == null) throw new Exception("Não foi possível encontrar o pedido");
-
+        var order = await _orderPersistence.GetOrderByIdAsync(id) ?? throw new Exception("Não foi possível encontrar o pedido");
         await ValidateItemOrder(model);
         model.Id = order.Id;
 
@@ -68,29 +66,6 @@ namespace Seamstress.Application
         model.ItemOrders.ToList().ForEach((itemOrder) =>
         {
           if (itemOrder.Id == 0) _generalPersistence.Add(_mapper.Map<ItemOrder>(itemOrder));
-        });
-
-        //updates aditional sizings
-        order.ItemOrders.ToList().ForEach((itemOrder) =>
-        {
-          var itemOrderToUpdate = model.ItemOrders.Where(x => x.Id == itemOrder.Id).FirstOrDefault();
-          var aditionalSizingToUpdate = itemOrderToUpdate?.AditionalSizing;
-
-          if (itemOrder.AditionalSizing == null && aditionalSizingToUpdate != null)
-          {
-            _generalPersistence.Add(aditionalSizingToUpdate);
-          }
-          else if (itemOrder.AditionalSizing != null && aditionalSizingToUpdate != null)
-          {
-            _generalPersistence.Update(aditionalSizingToUpdate);
-          }
-          else if (itemOrder.AditionalSizing != null && aditionalSizingToUpdate == null)
-          {
-            itemOrder.AditionalSizingId = null;
-            _generalPersistence.Delete(itemOrder.AditionalSizing);
-          }
-
-          _generalPersistence.Update(_mapper.Map<ItemOrder>(itemOrderToUpdate));
         });
 
         _mapper.Map(model, order);
@@ -245,12 +220,9 @@ namespace Seamstress.Application
       {
         var itemResponse = await _itemPersistence.GetItemByIdAsync(itemOrder.ItemId);
 
-        if (itemResponse.ItemColors.Where(x => x.ColorId == itemOrder.ColorId).FirstOrDefault() == null)
-          throw new Exception($"Cor inválida no item de id: {itemOrder.ItemId}");
-        if (itemResponse.ItemFabrics.Where(x => x.FabricId == itemOrder.FabricId).FirstOrDefault() == null)
-          throw new Exception($"Tecido inválido no item de id: {itemOrder.ItemId}");
-        if (itemResponse.ItemSizes.Where(x => x.SizeId == itemOrder.SizeId).FirstOrDefault() == null)
-          throw new Exception($"Tamanho inválido no item de id: {itemOrder.ItemId}");
+        if (itemResponse.ItemColors.FirstOrDefault(x => x.ColorId == itemOrder.ColorId) == null) throw new Exception($"Cor inválida no item de id: {itemOrder.ItemId}"); ;
+        if (itemResponse.ItemFabrics.FirstOrDefault(x => x.FabricId == itemOrder.FabricId) == null) throw new Exception($"Tecido inválido no item de id: {itemOrder.ItemId}");
+        if (itemResponse.ItemSizes.FirstOrDefault(x => x.Id == itemOrder.ItemSizeId) == null) throw new Exception($"Tamanho inválido no item de id: {itemOrder.ItemId}");
       }
     }
   }

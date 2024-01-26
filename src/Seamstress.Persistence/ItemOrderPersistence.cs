@@ -18,8 +18,7 @@ namespace Seamstress.Persistence
       IQueryable<ItemOrder> query = _context.ItemOrder.Where(io => io.OrderId == orderId)
                                     .Include(io => io.Color)
                                     .Include(io => io.Fabric)
-                                    .Include(io => io.Size)
-                                    .Include(io => io.AditionalSizing)
+                                    .Include(io => io.ItemSize)
                                     .Include(io => io.Item);
 
       return query.AsNoTracking().ToArrayAsync();
@@ -30,8 +29,7 @@ namespace Seamstress.Persistence
       IQueryable<ItemOrder> query = _context.ItemOrder.Where(io => io.Id == id)
                                     .Include(io => io.Color)
                                     .Include(io => io.Fabric)
-                                    .Include(io => io.Size)
-                                    .Include(io => io.AditionalSizing)
+                                    .Include(io => io.ItemSize)
                                     .Include(io => io.Item);
 
       return query.AsNoTracking().FirstAsync();

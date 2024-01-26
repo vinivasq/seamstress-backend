@@ -158,9 +158,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var items = await _itemPersistence.GetAllItemsAsync();
-
-        return items;
+        return await _itemPersistence.GetAllItemsAsync();
       }
       catch (Exception ex)
       {
@@ -173,9 +171,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var item = await _itemPersistence.GetItemByIdAsync(id);
-
-        return item;
+        return await _itemPersistence.GetItemByIdAsync(id);
       }
       catch (Exception ex)
       {

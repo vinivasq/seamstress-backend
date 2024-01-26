@@ -116,11 +116,10 @@ namespace Seamstress.Application
       try
       {
         var item = await _itemPersistence.GetItemByIdAsync(model.ItemId);
-        var order = await _orderPersistence.GetOrderByIdAsync(model.OrderId);
 
-        if (item.ItemColors.Where(x => x.ColorId == model.ColorId).FirstOrDefault() == null) throw new Exception("Cor inválida");
-        if (item.ItemFabrics.Where(x => x.FabricId == model.FabricId).FirstOrDefault() == null) throw new Exception("Tecido inválido");
-        if (item.ItemSizes.Where(x => x.SizeId == model.SizeId).FirstOrDefault() == null) throw new Exception("Tamanho inválido");
+        if (item.ItemColors.FirstOrDefault(x => x.ColorId == model.ColorId) == null) throw new Exception("Cor inválida");
+        if (item.ItemFabrics.FirstOrDefault(x => x.FabricId == model.FabricId) == null) throw new Exception("Tecido inválido");
+        if (item.ItemSizes.FirstOrDefault(x => x.Id == model.ItemSizeId) == null) throw new Exception("Tamanho inválido");
       }
       catch (Exception ex)
       {

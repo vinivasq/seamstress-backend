@@ -9,7 +9,7 @@ namespace Seamstress.Application.Dtos
     public Set? Set { get; set; }
     public IEnumerable<Color> Colors { get; set; } = null!;
     public IEnumerable<Fabric> Fabrics { get; set; } = null!;
-    public IEnumerable<Size> Sizes { get; set; } = null!;
+    public IEnumerable<ItemSizeDto> ItemSizes { get; set; } = null!;
     public string ImageURL { get; set; } = null!;
     public decimal Price { get; set; }
   }
