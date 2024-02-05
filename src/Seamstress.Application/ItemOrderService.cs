@@ -29,6 +29,13 @@ namespace Seamstress.Application
 
     }
 
+    public ItemOrder[] UpdateItemOrders()
+    {
+      // Exemplo de código para migração de dados
+      return _itemOrderPersistence.UpdateItemOrders();
+    }
+
+
     public async Task<ItemOrder> AddItemOrder(ItemOrderInputDto model)
     {
       try
