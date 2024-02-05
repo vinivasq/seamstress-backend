@@ -84,9 +84,11 @@ namespace Seamstress.API
       services.AddScoped<ISizePersistence, SizePersistence>();
       services.AddScoped<IItemColorPersistence, ItemColorPersistence>();
       services.AddScoped<IItemFabricPersistence, ItemFabricPersistence>();
+      services.AddScoped<IItemSizeService, ItemSizeService>();
+      services.AddScoped<IItemSizePersistence, ItemSizePersistence>();
+      services.AddScoped<IUserPersistence, UserPersistence>();
       services.AddScoped<IImageService, ImageService>();
       services.AddScoped<IAzureBlobService, AzureBlobService>();
-      services.AddScoped<IUserPersistence, UserPersistence>();
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<ITokenService, TokenService>();
 
