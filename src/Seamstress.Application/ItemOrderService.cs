@@ -11,20 +11,17 @@ namespace Seamstress.Application
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IItemOrderPersistence _itemOrderPersistence;
     private readonly IItemPersistence _itemPersistence;
-    private readonly IOrderPersistence _orderPersistence;
     private readonly IMapper _mapper;
 
 
     public ItemOrderService(IGeneralPersistence generalPersistence,
                             IItemOrderPersistence itemOrderPersistence,
                             IItemPersistence itemPersistence,
-                            IOrderPersistence orderPersistence,
                             IMapper mapper)
     {
       this._generalPersistence = generalPersistence;
       this._itemOrderPersistence = itemOrderPersistence;
       this._itemPersistence = itemPersistence;
-      this._orderPersistence = orderPersistence;
       this._mapper = mapper;
 
     }
