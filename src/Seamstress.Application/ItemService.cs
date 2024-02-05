@@ -10,11 +10,13 @@ namespace Seamstress.Application
   public class ItemService : IItemService
   {
     private readonly IItemPersistence _itemPersistence;
+    private readonly IItemSizePersistence _itemSizePersistence;
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IAzureBlobService _azureService;
     private readonly IMapper _mapper;
 
     public ItemService(IItemPersistence itemPersistence,
+                        IItemSizePersistence itemSizePersistence,
                         IAzureBlobService azureService,
                         IGeneralPersistence generalPersistence,
                         IMapper mapper)
@@ -23,6 +25,7 @@ namespace Seamstress.Application
       this._generalPersistence = generalPersistence;
       this._azureService = azureService;
       this._itemPersistence = itemPersistence;
+      this._itemSizePersistence = itemSizePersistence;
     }
 
 
@@ -77,7 +80,15 @@ namespace Seamstress.Application
 
         if (colorsToRemove.Length > 0) _generalPersistence.DeleteRange(colorsToRemove);
         if (fabricsToRemove.Length > 0) _generalPersistence.DeleteRange(fabricsToRemove);
-        if (sizesToRemove.Length > 0) _generalPersistence.DeleteRange(sizesToRemove);
+        if (sizesToRemove.Length > 0)
+        {
+          foreach (ItemSize itemSizeToRemove in sizesToRemove)
+          {
+            //Gets the ItemSize without item to prevent reference cycle and ItemSizeMeasurements deletition misbehaviour
+            ItemSize itemSize = await _itemSizePersistence.GetOnlyItemSizeByIdAsync(itemSizeToRemove.Id);
+            _generalPersistence.Delete(itemSize);
+          }
+        }
 
         if (colorsToAdd.Count > 0) colorsToAdd.ForEach((colorId) =>
         {
@@ -120,41 +131,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          List<ItemSizeMeasurement> modelMeasurements = model.ItemSizes.Where(x => x.Measurements != null && x.Id > 0).SelectMany(x => x.Measurements).ToList();
-
-          var itemFromDB = await _itemPersistence.GetItemByIdAsync(id);
-
-          List<ItemSizeMeasurement> itemMeasurements = itemFromDB.ItemSizes.Where(x => x.Measurements != null).SelectMany(x => x.Measurements).ToList();
-
-          ItemSizeMeasurement[] measurementsToRemove = itemMeasurements.Where(itemMeasurement => !modelMeasurements.Any(modelMeasurement => modelMeasurement.Id == itemMeasurement.Id)).ToArray();
-
-
-          if (modelMeasurements.Count > 0)
-          {
-            modelMeasurements.ForEach(measurement =>
-            {
-              if (measurement.Id == 0)
-              {
-                _generalPersistence.Add(measurement);
-              }
-              else
-              {
-                _generalPersistence.Update(measurement);
-              }
-            });
-          }
-
-          if (measurementsToRemove.Length > 0)
-            _generalPersistence.DeleteRange(measurementsToRemove);
-
-          if (await _generalPersistence.SaveChangesAsync())
-          {
-            var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id);
-
-            return _mapper.Map<ItemOutputDto>(itemResponse);
-          }
-          throw new Exception("Não foi possível atualizar as medidas do item.");
-
+          var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id);
+          return _mapper.Map<ItemOutputDto>(itemResponse);
         }
 
         throw new Exception("Não foi possível atualizar o item");
