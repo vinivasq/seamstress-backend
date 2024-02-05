@@ -53,6 +53,10 @@ namespace Seamstress.Persistence.Context
       modelBuilder.Entity<OrderUser>().HasKey(OU => new { OU.OrderId, OU.UserId });
       modelBuilder.Entity<ItemColor>().HasKey(IC => new { IC.ItemId, IC.ColorId });
       modelBuilder.Entity<ItemFabric>().HasKey(IF => new { IF.ItemId, IF.FabricId });
+      modelBuilder.Entity<ItemSize>().HasMany(IS => IS.Measurements)
+                                     .WithOne(ISM => ISM.ItemSize)
+                                     .HasForeignKey(ISM => ISM.ItemSizeId)
+                                     .OnDelete(DeleteBehavior.Cascade);
 
       modelBuilder.Entity<Order>().HasMany(O => O.ItemOrders)
                                   .WithOne(IO => IO.Order)
