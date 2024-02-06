@@ -5,8 +5,6 @@ namespace Seamstress.Application.Contracts
 {
   public interface IItemOrderService
   {
-    public ItemOrder[] UpdateItemOrders();
-
     public Task<ItemOrder> AddItemOrder(ItemOrderInputDto model);
     public Task<bool> DeleteItemOrder(int id);
 

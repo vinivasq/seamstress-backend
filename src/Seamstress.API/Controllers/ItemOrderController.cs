@@ -17,24 +17,6 @@ namespace Seamstress.API.Controllers
       this._itemOrderService = itemOrderService;
     }
 
-    [HttpGet("updateItemSizes")]
-    public ActionResult UpdateItemSizes()
-    {
-      try
-      {
-        var itemOrders = _itemOrderService.UpdateItemOrders();
-        if (itemOrders == null) NoContent();
-
-        return Ok(itemOrders);
-      }
-      catch (Exception ex)
-      {
-
-        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível listar os modelos. Erro: {ex.Message}");
-      }
-    }
-
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
