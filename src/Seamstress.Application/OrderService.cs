@@ -222,7 +222,7 @@ namespace Seamstress.Application
 
         if (itemResponse.ItemColors.FirstOrDefault(x => x.ColorId == itemOrder.ColorId) == null) throw new Exception($"Cor inválida no item de id: {itemOrder.ItemId}"); ;
         if (itemResponse.ItemFabrics.FirstOrDefault(x => x.FabricId == itemOrder.FabricId) == null) throw new Exception($"Tecido inválido no item de id: {itemOrder.ItemId}");
-        if (itemResponse.ItemSizes.FirstOrDefault(x => x.Id == itemOrder.ItemSizeId) == null) throw new Exception($"Tamanho inválido no item de id: {itemOrder.ItemId}");
+        if (itemResponse.ItemSizes.FirstOrDefault(x => x.Id == itemOrder.SizeId) == null) throw new Exception($"Tamanho inválido no item de id: {itemOrder.ItemId}");
       }
     }
   }

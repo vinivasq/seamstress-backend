@@ -12,7 +12,7 @@ using Seamstress.Persistence.Context;
 namespace Seamstress.Persistence.Migrations
 {
     [DbContext(typeof(SeamstressContext))]
-    [Migration("20240204200127_ItemSizesAndMeasurements")]
+    [Migration("20240206225919_ItemSizesAndMeasurements")]
     partial class ItemSizesAndMeasurements
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -419,13 +419,10 @@ namespace Seamstress.Persistence.Migrations
                     b.Property<int>("ItemId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ItemSizeId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("SizeId")
+                    b.Property<int>("SizeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -435,8 +432,6 @@ namespace Seamstress.Persistence.Migrations
                     b.HasIndex("FabricId");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("ItemSizeId");
 
                     b.HasIndex("OrderId");
 
@@ -761,10 +756,6 @@ namespace Seamstress.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Seamstress.Domain.ItemSize", "ItemSize")
-                        .WithMany()
-                        .HasForeignKey("ItemSizeId");
-
                     b.HasOne("Seamstress.Domain.Order", "Order")
                         .WithMany("ItemOrders")
                         .HasForeignKey("OrderId")
@@ -773,15 +764,15 @@ namespace Seamstress.Persistence.Migrations
 
                     b.HasOne("Seamstress.Domain.Size", "Size")
                         .WithMany()
-                        .HasForeignKey("SizeId");
+                        .HasForeignKey("SizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Color");
 
                     b.Navigation("Fabric");
 
                     b.Navigation("Item");
-
-                    b.Navigation("ItemSize");
 
                     b.Navigation("Order");
 

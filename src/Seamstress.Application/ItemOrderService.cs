@@ -26,12 +26,6 @@ namespace Seamstress.Application
 
     }
 
-    public ItemOrder[] UpdateItemOrders()
-    {
-      // Exemplo de código para migração de dados
-      return _itemOrderPersistence.UpdateItemOrders();
-    }
-
 
     public async Task<ItemOrder> AddItemOrder(ItemOrderInputDto model)
     {
@@ -123,7 +117,7 @@ namespace Seamstress.Application
 
         if (item.ItemColors.FirstOrDefault(x => x.ColorId == model.ColorId) == null) throw new Exception("Cor inválida");
         if (item.ItemFabrics.FirstOrDefault(x => x.FabricId == model.FabricId) == null) throw new Exception("Tecido inválido");
-        if (item.ItemSizes.FirstOrDefault(x => x.Id == model.ItemSizeId) == null) throw new Exception("Tamanho inválido");
+        if (item.ItemSizes.FirstOrDefault(x => x.Id == model.SizeId) == null) throw new Exception("Tamanho inválido");
       }
       catch (Exception ex)
       {
