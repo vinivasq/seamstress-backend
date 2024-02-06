@@ -1,4 +1,5 @@
 using AutoMapper;
+using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Domain.Identity;
@@ -7,8 +8,11 @@ namespace Seamstress.Application.Helpers
 {
   public class SeamstressProfile : Profile
   {
-    public SeamstressProfile()
+    private readonly IItemSizeService _itemSizeService;
+    public SeamstressProfile(IItemSizeService itemSizeService)
     {
+      this._itemSizeService = itemSizeService;
+
       CreateMap<Customer, CustomerDto>().ReverseMap();
       CreateMap<Customer, CustomerOutputDto>();
       CreateMap<OrderInputDto, Order>();
@@ -17,7 +21,8 @@ namespace Seamstress.Application.Helpers
       CreateMap<ItemOrder, ItemOrderOutputDto>()
         .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
         .ForMember(dest => dest.Fabric, opt => opt.MapFrom(src => src.Fabric))
-        .ForMember(dest => dest.ItemSize, opt => opt.MapFrom(src => src.ItemSize));
+        .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size))
+        .ForMember(dest => dest.ItemSize, opt => opt.MapFrom(src => _itemSizeService.GetItemSizeByItemOrder(src.ItemId, src.SizeId)));
       CreateMap<ItemInputDto, Item>();
       CreateMap<ItemSize, ItemSizeDto>();
       CreateMap<Item, ItemOutputDto>()

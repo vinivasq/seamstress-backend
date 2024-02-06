@@ -26,6 +26,17 @@ namespace Seamstress.Application
         throw new Exception(ex.Message);
       }
     }
+    public ItemSize GetItemSizeByItemOrder(int itemId, int sizeId)
+    {
+      try
+      {
+        return _itemSizePersistence.GetItemSizeByItemOrder(itemId, sizeId);
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(ex.Message);
+      }
+    }
     public async Task<ItemSize> GetItemSizeByIdAsync(int id)
     {
       try

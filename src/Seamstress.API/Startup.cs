@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Seamstress.Application.Helpers;
+using AutoMapper;
 
 namespace Seamstress.API
 {
@@ -65,6 +67,10 @@ namespace Seamstress.API
       });
 
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+      services.AddScoped(provider => new MapperConfiguration(config =>
+      {
+        config.AddProfile(new SeamstressProfile(provider.GetService<IItemSizeService>()));
+      }).CreateMapper());
       services.AddScoped<IGeneralPersistence, GeneralPersistence>();
       services.AddScoped<IOrderService, OrderService>();
       services.AddScoped<IOrderPersistence, OrderPersistence>();

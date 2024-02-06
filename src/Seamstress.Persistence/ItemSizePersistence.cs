@@ -24,6 +24,15 @@ namespace Seamstress.Persistence
 
       return await query.AsNoTracking().ToArrayAsync();
     }
+    public ItemSize GetItemSizeByItemOrder(int itemId, int sizeId)
+    {
+      IQueryable<ItemSize> query = _context.ItemsSizes;
+
+      query = query.Include(itemSize => itemSize.Measurements);
+      query = query.Where(itemSize => itemSize.ItemId == itemId && itemSize.SizeId == sizeId);
+
+      return query.AsNoTracking().FirstOrDefault();
+    }
     public async Task<ItemSize> GetItemSizeByIdAsync(int id)
     {
       IQueryable<ItemSize> query = _context.ItemsSizes;
