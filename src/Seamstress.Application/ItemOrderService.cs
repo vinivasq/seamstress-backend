@@ -11,23 +11,21 @@ namespace Seamstress.Application
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IItemOrderPersistence _itemOrderPersistence;
     private readonly IItemPersistence _itemPersistence;
-    private readonly IOrderPersistence _orderPersistence;
     private readonly IMapper _mapper;
 
 
     public ItemOrderService(IGeneralPersistence generalPersistence,
                             IItemOrderPersistence itemOrderPersistence,
                             IItemPersistence itemPersistence,
-                            IOrderPersistence orderPersistence,
                             IMapper mapper)
     {
       this._generalPersistence = generalPersistence;
       this._itemOrderPersistence = itemOrderPersistence;
       this._itemPersistence = itemPersistence;
-      this._orderPersistence = orderPersistence;
       this._mapper = mapper;
 
     }
+
 
     public async Task<ItemOrder> AddItemOrder(ItemOrderInputDto model)
     {
@@ -116,11 +114,10 @@ namespace Seamstress.Application
       try
       {
         var item = await _itemPersistence.GetItemByIdAsync(model.ItemId);
-        var order = await _orderPersistence.GetOrderByIdAsync(model.OrderId);
 
-        if (item.ItemColors.Where(x => x.ColorId == model.ColorId).FirstOrDefault() == null) throw new Exception("Cor inválida");
-        if (item.ItemFabrics.Where(x => x.FabricId == model.FabricId).FirstOrDefault() == null) throw new Exception("Tecido inválido");
-        if (item.ItemSizes.Where(x => x.SizeId == model.SizeId).FirstOrDefault() == null) throw new Exception("Tamanho inválido");
+        if (item.ItemColors.FirstOrDefault(x => x.ColorId == model.ColorId) == null) throw new Exception("Cor inválida");
+        if (item.ItemFabrics.FirstOrDefault(x => x.FabricId == model.FabricId) == null) throw new Exception("Tecido inválido");
+        if (item.ItemSizes.FirstOrDefault(x => x.Id == model.SizeId) == null) throw new Exception("Tamanho inválido");
       }
       catch (Exception ex)
       {

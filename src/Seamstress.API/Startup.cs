@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Seamstress.Application.Helpers;
+using AutoMapper;
 
 namespace Seamstress.API
 {
@@ -84,9 +86,11 @@ namespace Seamstress.API
       services.AddScoped<ISizePersistence, SizePersistence>();
       services.AddScoped<IItemColorPersistence, ItemColorPersistence>();
       services.AddScoped<IItemFabricPersistence, ItemFabricPersistence>();
+      services.AddScoped<IItemSizeService, ItemSizeService>();
+      services.AddScoped<IItemSizePersistence, ItemSizePersistence>();
+      services.AddScoped<IUserPersistence, UserPersistence>();
       services.AddScoped<IImageService, ImageService>();
       services.AddScoped<IAzureBlobService, AzureBlobService>();
-      services.AddScoped<IUserPersistence, UserPersistence>();
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<ITokenService, TokenService>();
 

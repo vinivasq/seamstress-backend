@@ -10,11 +10,13 @@ namespace Seamstress.Application
   public class ItemService : IItemService
   {
     private readonly IItemPersistence _itemPersistence;
+    private readonly IItemSizePersistence _itemSizePersistence;
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IAzureBlobService _azureService;
     private readonly IMapper _mapper;
 
     public ItemService(IItemPersistence itemPersistence,
+                        IItemSizePersistence itemSizePersistence,
                         IAzureBlobService azureService,
                         IGeneralPersistence generalPersistence,
                         IMapper mapper)
@@ -23,6 +25,7 @@ namespace Seamstress.Application
       this._generalPersistence = generalPersistence;
       this._azureService = azureService;
       this._itemPersistence = itemPersistence;
+      this._itemSizePersistence = itemSizePersistence;
     }
 
 
@@ -75,9 +78,17 @@ namespace Seamstress.Application
         var fabricsToAdd = modelFabrics.Except(itemFabrics).ToList();
         var sizesToAdd = modelSizes.Except(itemSizes).ToList();
 
-        if (colorsToRemove.Count() > 0) _generalPersistence.DeleteRange(colorsToRemove);
-        if (fabricsToRemove.Count() > 0) _generalPersistence.DeleteRange(fabricsToRemove);
-        if (sizesToRemove.Count() > 0) _generalPersistence.DeleteRange(sizesToRemove);
+        if (colorsToRemove.Length > 0) _generalPersistence.DeleteRange(colorsToRemove);
+        if (fabricsToRemove.Length > 0) _generalPersistence.DeleteRange(fabricsToRemove);
+        if (sizesToRemove.Length > 0)
+        {
+          foreach (ItemSize itemSizeToRemove in sizesToRemove)
+          {
+            //Gets the ItemSize without item to prevent reference cycle and ItemSizeMeasurements deletition misbehaviour
+            ItemSize itemSize = await _itemSizePersistence.GetOnlyItemSizeByIdAsync(itemSizeToRemove.Id);
+            _generalPersistence.Delete(itemSize);
+          }
+        }
 
         if (colorsToAdd.Count > 0) colorsToAdd.ForEach((colorId) =>
         {
@@ -103,10 +114,13 @@ namespace Seamstress.Application
 
         if (sizesToAdd.Count > 0) sizesToAdd.ForEach((sizeId) =>
         {
+          ItemSize modelItemSize = model.ItemSizes.First(x => x.SizeId == sizeId);
+
           ItemSize size = new()
           {
             ItemId = item.Id,
-            SizeId = sizeId
+            SizeId = sizeId,
+            Measurements = modelItemSize.Measurements
           };
 
           _generalPersistence.Add(size);
@@ -118,7 +132,6 @@ namespace Seamstress.Application
         if (await _generalPersistence.SaveChangesAsync())
         {
           var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id);
-
           return _mapper.Map<ItemOutputDto>(itemResponse);
         }
 
@@ -158,9 +171,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var items = await _itemPersistence.GetAllItemsAsync();
-
-        return items;
+        return await _itemPersistence.GetAllItemsAsync();
       }
       catch (Exception ex)
       {
@@ -173,9 +184,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var item = await _itemPersistence.GetItemByIdAsync(id);
-
-        return item;
+        return await _itemPersistence.GetItemByIdAsync(id);
       }
       catch (Exception ex)
       {

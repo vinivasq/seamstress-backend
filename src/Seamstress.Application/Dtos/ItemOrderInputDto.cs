@@ -1,5 +1,3 @@
-using Seamstress.Domain;
-
 namespace Seamstress.Application.Dtos
 {
   public class ItemOrderInputDto
@@ -9,7 +7,6 @@ namespace Seamstress.Application.Dtos
     public int ColorId { get; set; }
     public int FabricId { get; set; }
     public int SizeId { get; set; }
-    public Sizings? AditionalSizing { get; set; }
     public string? Description { get; set; }
     public int Amount { get; set; }
 
