@@ -67,10 +67,6 @@ namespace Seamstress.API
       });
 
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-      services.AddScoped(provider => new MapperConfiguration(config =>
-      {
-        config.AddProfile(new SeamstressProfile(provider.GetService<IItemSizeService>()));
-      }).CreateMapper());
       services.AddScoped<IGeneralPersistence, GeneralPersistence>();
       services.AddScoped<IOrderService, OrderService>();
       services.AddScoped<IOrderPersistence, OrderPersistence>();

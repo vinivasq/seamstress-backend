@@ -8,12 +8,15 @@ namespace Seamstress.Application.Helpers
 {
   public class SeamstressProfile : Profile
   {
-    private readonly IItemSizeService _itemSizeService;
-    public SeamstressProfile(IItemSizeService itemSizeService)
+    public SeamstressProfile()
     {
-      this._itemSizeService = itemSizeService;
-
+      CreateMap<User, UserLoginDto>().ReverseMap();
+      CreateMap<User, UserUpdateDto>().ReverseMap();
+      CreateMap<User, UserOutputDto>().ReverseMap();
       CreateMap<Customer, CustomerDto>().ReverseMap();
+      CreateMap<ItemSize, ItemSizeDto>().ReverseMap();
+      CreateMap<ItemSize, ItemSizeForMeasurementsDto>().ReverseMap();
+      CreateMap<ItemSizeMeasurement, ItemSizeMeasurementDto>().ReverseMap();
       CreateMap<Customer, CustomerOutputDto>();
       CreateMap<OrderInputDto, Order>();
       CreateMap<Order, OrderOutputDto>();
@@ -22,16 +25,15 @@ namespace Seamstress.Application.Helpers
         .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
         .ForMember(dest => dest.Fabric, opt => opt.MapFrom(src => src.Fabric))
         .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size))
-        .ForMember(dest => dest.ItemSize, opt => opt.MapFrom(src => _itemSizeService.GetItemSizeByItemOrder(src.ItemId, src.SizeId)));
+        .ForMember(dest => dest.ItemSize, opt => opt.Ignore())
+        .AfterMap<MapItemSizeAction>();
+
+
       CreateMap<ItemInputDto, Item>();
-      CreateMap<ItemSize, ItemSizeDto>();
       CreateMap<Item, ItemOutputDto>()
         .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.ItemColors.Select(ic => ic.Color)))
         .ForMember(dest => dest.Fabrics, opt => opt.MapFrom(src => src.ItemFabrics.Select(ic => ic.Fabric)));
       CreateMap<User, UserDto>().ReverseMap();
-      CreateMap<User, UserLoginDto>().ReverseMap();
-      CreateMap<User, UserUpdateDto>().ReverseMap();
-      CreateMap<User, UserOutputDto>().ReverseMap();
     }
   }
 }

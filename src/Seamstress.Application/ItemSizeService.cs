@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Http.Features;
+using AutoMapper;
 using Seamstress.Application.Contracts;
+using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Persistence.Contracts;
 
@@ -9,46 +10,50 @@ namespace Seamstress.Application
   {
     private readonly IItemSizePersistence _itemSizePersistence;
     private readonly IGeneralPersistence _generalPersistence;
-    public ItemSizeService(IItemSizePersistence itemSizePersistence, IGeneralPersistence generalPersistence)
+    private readonly IMapper _mapper;
+    public ItemSizeService(IItemSizePersistence itemSizePersistence,
+                            IGeneralPersistence generalPersistence,
+                            IMapper mapper)
     {
+      this._mapper = mapper;
       this._generalPersistence = generalPersistence;
       this._itemSizePersistence = itemSizePersistence;
     }
 
-    public async Task<ItemSize[]> GetItemSizesByItemIdAsync(int id)
+    public async Task<ItemSizeForMeasurementsDto[]> GetItemSizesByItemIdAsync(int id)
     {
       try
       {
-        return await _itemSizePersistence.GetItemSizesByItemIdAsync(id);
+        return this._mapper.Map<ItemSizeForMeasurementsDto[]>(await _itemSizePersistence.GetItemSizesByItemIdAsync(id));
       }
       catch (Exception ex)
       {
         throw new Exception(ex.Message);
       }
     }
-    public ItemSize GetItemSizeByItemOrder(int itemId, int sizeId)
+    public ItemSizeDto GetItemSizeByItemOrder(int itemId, int sizeId)
     {
       try
       {
-        return _itemSizePersistence.GetItemSizeByItemOrder(itemId, sizeId);
+        return this._mapper.Map<ItemSizeDto>(_itemSizePersistence.GetItemSizeByItemOrder(itemId, sizeId));
       }
       catch (Exception ex)
       {
         throw new Exception(ex.Message);
       }
     }
-    public async Task<ItemSize> GetItemSizeByIdAsync(int id)
+    public async Task<ItemSizeForMeasurementsDto> GetItemSizeByIdAsync(int id)
     {
       try
       {
-        return await _itemSizePersistence.GetItemSizeByIdAsync(id);
+        return this._mapper.Map<ItemSizeForMeasurementsDto>(await _itemSizePersistence.GetItemSizeByIdAsync(id));
       }
       catch (Exception ex)
       {
         throw new Exception(ex.Message);
       }
     }
-    public async Task<ItemSize> UpdateItemSizeAsync(int id, ItemSize model)
+    public async Task<ItemSizeForMeasurementsDto> UpdateItemSizeAsync(int id, ItemSize model)
     {
       try
       {
@@ -60,12 +65,19 @@ namespace Seamstress.Application
 
         if (itemMeasurements.Count > 0)
         {
-          ItemSizeMeasurement[] measurementsToRemove = itemMeasurements.Where(itemMeasurement => !modelMeasurements
+          List<ItemSizeMeasurement> measurementsToRemove = itemMeasurements.Where(itemMeasurement => !modelMeasurements
                                                                               .Any(modelMeasurement => modelMeasurement.Id == itemMeasurement.Id &&
-                                                                                    modelMeasurement.Id > 0)).ToArray();
+                                                                                    modelMeasurement.Id > 0)).ToList();
 
-          if (measurementsToRemove.Length > 0)
-            _generalPersistence.DeleteRange(measurementsToRemove);
+
+          if (measurementsToRemove.Count > 0)
+          {
+            measurementsToRemove.ForEach(measurement =>
+            {
+              measurement.ItemSize = null;
+              _generalPersistence.Delete(measurement);
+            });
+          }
         }
 
         if (modelMeasurements.Count > 0)
@@ -84,11 +96,9 @@ namespace Seamstress.Application
 
         }
 
-        if (modelMeasurements.Count == 0 && itemMeasurements.Count > 0)
-          _generalPersistence.DeleteRange(itemMeasurements.ToArray());
-
         await _generalPersistence.SaveChangesAsync();
-        return await _itemSizePersistence.GetItemSizeByIdAsync(model.Id);
+
+        return this._mapper.Map<ItemSizeForMeasurementsDto>(await _itemSizePersistence.GetItemSizeByIdAsync(model.Id));
       }
       catch (Exception ex)
       {
