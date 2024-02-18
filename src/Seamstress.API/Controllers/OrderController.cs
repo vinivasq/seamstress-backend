@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
+using Seamstress.Persistence.Helpers;
 
 namespace Seamstress.API.Controllers;
 
@@ -22,23 +23,15 @@ public class OrderController : ControllerBase
   }
 
   [HttpGet]
-  public async Task<IActionResult> Get()
+  public async Task<IActionResult> Get([FromQuery] OrderParams orderParams)
   {
     try
     {
-      OrderOutputDto[] orders;
-      var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
+      PageList<OrderOutputDto> orders = await _orderService.GetOrdersAsync(orderParams);
 
-      if (user.Role == "Executor")
-      {
-        orders = await _orderService.GetOrdersByExecutorAsync(User.GetUserId());
-      }
-      else
-      {
-        orders = await _orderService.GetAllOrdersAsync();
-      }
+      if (orders.Count == 0) return NoContent();
 
-      if (orders == null) return NoContent();
+      Response.AddPagination(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages);
 
       return Ok(orders);
     }

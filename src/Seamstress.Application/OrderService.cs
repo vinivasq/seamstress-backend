@@ -4,6 +4,7 @@ using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Domain.Enum;
 using Seamstress.Persistence.Contracts;
+using Seamstress.Persistence.Helpers;
 
 namespace Seamstress.Application
 {
@@ -126,15 +127,25 @@ namespace Seamstress.Application
         throw new Exception(ex.Message);
       }
     }
-    public async Task<OrderOutputDto[]> GetAllOrdersAsync()
+    public async Task<PageList<OrderOutputDto>> GetOrdersAsync(OrderParams orderParams)
     {
       try
       {
-        var orders = await _orderPersistence.GetAllOrdersAsync();
+        if (orderParams.OrderedAtStart > orderParams.OrderedAtEnd) throw new Exception("Data de início não pode ser maior que a data final");
 
-        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
+        PageList<Order> orders = await _orderPersistence.GetOrdersAsync(orderParams);
 
-        return ordersDto;
+        PageList<OrderOutputDto> result = new()
+        {
+          CurrentPage = orders.CurrentPage,
+          TotalPages = orders.TotalPages,
+          PageSize = orders.PageSize,
+          TotalCount = orders.TotalCount
+        };
+
+        result.AddRange(_mapper.Map<OrderOutputDto[]>(orders));
+
+        return result;
       }
       catch (Exception ex)
       {
@@ -167,23 +178,6 @@ namespace Seamstress.Application
       try
       {
         var orders = await _orderPersistence.GetPendingOrdersByExecutor(userId);
-
-        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
-
-        return ordersDto;
-      }
-      catch (Exception ex)
-      {
-
-        throw new Exception(ex.Message);
-      }
-    }
-
-    public async Task<OrderOutputDto[]> GetOrdersByExecutorAsync(int userId)
-    {
-      try
-      {
-        var orders = await _orderPersistence.GetOrdersByExecutor(userId);
 
         var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
 

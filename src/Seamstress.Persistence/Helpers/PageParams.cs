@@ -2,8 +2,8 @@ namespace Seamstress.Persistence.Helpers
 {
   public class PageParams
   {
-    public const int MaxPageSize = 50;
-    public int PageNumber { get; set; } = 1;
+    public const int MaxPageSize = 100;
+    public int PageNumber { get; set; } = 0;
     private int pageSize = 25;
     public int PageSize
     {

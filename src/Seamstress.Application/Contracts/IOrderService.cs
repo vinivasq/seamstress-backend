@@ -1,4 +1,5 @@
 using Seamstress.Application.Dtos;
+using Seamstress.Persistence.Helpers;
 
 namespace Seamstress.Application.Contracts
 {
@@ -9,9 +10,8 @@ namespace Seamstress.Application.Contracts
     Task<OrderOutputDto> UpdateOrder(int id, OrderInputDto model);
     Task<bool> DeleteOrder(int id);
 
-    Task<OrderOutputDto[]> GetAllOrdersAsync();
+    Task<PageList<OrderOutputDto>> GetOrdersAsync(OrderParams orderParams);
     Task<OrderOutputDto[]> GetPendingOrdersAsync();
-    Task<OrderOutputDto[]> GetOrdersByExecutorAsync(int userId);
     Task<OrderOutputDto[]> GetPendingOrdersByExecutorAsync(int userId);
     Task<OrderOutputDto> GetOrderByIdAsync(int id);
   }
