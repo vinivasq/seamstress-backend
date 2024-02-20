@@ -36,7 +36,7 @@ namespace Seamstress.Persistence
         query = query.Where(order => orderParams.Steps.Contains((int)order.Step));
       }
 
-      query = query.OrderBy(order => order.Deadline);
+      query = query.OrderBy(order => order.OrderedAt);
 
       return await PageList<Order>.CreateAsync(query, orderParams.PageNumber, orderParams.PageSize);
     }
