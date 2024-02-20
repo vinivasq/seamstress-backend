@@ -12,8 +12,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using Seamstress.Application.Helpers;
-using AutoMapper;
 
 namespace Seamstress.API
 {
