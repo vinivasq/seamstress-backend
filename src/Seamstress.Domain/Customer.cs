@@ -6,6 +6,7 @@ namespace Seamstress.Domain
     public string Name { get; set; } = null!;
     public string Address { get; set; } = null!;
     public string City { get; set; } = null!;
+    public string UF { get; set; } = null!;
     public string Neighborhood { get; set; } = null!;
     public int Number { get; set; }
     public string? Complement { get; set; }

@@ -19,6 +19,11 @@ namespace Seamstress.Application.Dtos
     [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
     public string City { get; set; } = null!;
 
+    [Display(Name = "UF")]
+    [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
+    [MaxLength(2, ErrorMessage = "O campo {0} não pode ter mais que 2 caracteres.")]
+    public string UF { get; set; } = null!;
+
     [Display(Name = "Bairro")]
     [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
     public string Neighborhood { get; set; } = null!;
