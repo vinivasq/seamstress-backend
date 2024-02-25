@@ -38,5 +38,9 @@ namespace Seamstress.Persistence
     {
       return _context.SaveChanges() > 0;
     }
+    public void UpdateRange<T>(T[] entityArray) where T : class
+    {
+      _context.UpdateRange(entityArray);
+    }
   }
 }
