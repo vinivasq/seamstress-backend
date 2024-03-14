@@ -17,12 +17,12 @@ namespace Seamstress.API.Controllers
       this._chartService = chartService;
     }
 
-    [HttpGet("pie")]
-    public async Task<IActionResult> GetPieChart([FromQuery] string data, DateTime periodBegin, DateTime periodEnd)
+    [HttpGet("doughnut")]
+    public async Task<IActionResult> GetDoughnutChart([FromQuery] string data, DateTime periodBegin, DateTime periodEnd)
     {
       try
       {
-        PieChart chartData = await this._chartService.GetPieChartAsync(data, periodBegin, periodEnd);
+        DoughnutChart chartData = await this._chartService.GetDoughnutChartAsync(data, periodBegin, periodEnd);
         if (chartData == null) return NoContent();
 
         return Ok(chartData);

@@ -15,7 +15,7 @@ namespace Seamstress.Persistence
       this._context = context;
     }
 
-    public async Task<PieChart> GetModelPieChartAsync(DateTime periodBegin, DateTime periodEnd)
+    public async Task<DoughnutChart> GetModelDoughnutChartAsync(DateTime periodBegin, DateTime periodEnd)
     {
       try
       {
@@ -26,7 +26,7 @@ namespace Seamstress.Persistence
         .Include(x => x.Item)
         .AsNoTracking().ToListAsync();
 
-        PieChart pieChart = new() { };
+        DoughnutChart doughnutChart = new() { };
 
         foreach (var item in itemOrders.GroupBy(x => x.Item!.Id)
                                         .Select(group => new
@@ -35,11 +35,11 @@ namespace Seamstress.Persistence
                                           Count = group.Count()
                                         }).OrderByDescending(x => x.Count))
         {
-          pieChart.DataSets.Add(item.Count);
-          pieChart.Labels.Add(item.Name);
+          doughnutChart.DataSets.Add(item.Count);
+          doughnutChart.Labels.Add(item.Name);
         }
 
-        return pieChart;
+        return doughnutChart;
       }
       catch (Exception ex)
       {
@@ -47,7 +47,7 @@ namespace Seamstress.Persistence
       }
     }
 
-    public async Task<PieChart> GetRegionPieChartAsync(DateTime periodBegin, DateTime periodEnd)
+    public async Task<DoughnutChart> GetRegionDoughnutChartAsync(DateTime periodBegin, DateTime periodEnd)
     {
       try
       {
@@ -59,7 +59,7 @@ namespace Seamstress.Persistence
         .Select(x => x.Customer!)
         .AsNoTracking().ToListAsync();
 
-        PieChart pieChart = new() { };
+        DoughnutChart doughnutChart = new() { };
 
         foreach (var customer in customers.GroupBy(x => x.UF)
                                           .Select(group => new
@@ -68,11 +68,11 @@ namespace Seamstress.Persistence
                                             Count = group.Count()
                                           }).OrderByDescending(x => x.Count))
         {
-          pieChart.DataSets.Add(customer.Count);
-          pieChart.Labels.Add(customer.UF);
+          doughnutChart.DataSets.Add(customer.Count);
+          doughnutChart.Labels.Add(customer.UF);
         }
 
-        return pieChart;
+        return doughnutChart;
       }
       catch (Exception ex)
       {

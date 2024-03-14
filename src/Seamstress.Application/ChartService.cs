@@ -13,14 +13,14 @@ namespace Seamstress.Application
       this._chartPersistence = chartPersistence;
     }
 
-    public async Task<PieChart> GetPieChartAsync(string data, DateTime periodBegin, DateTime periodEnd)
+    public async Task<DoughnutChart> GetDoughnutChartAsync(string data, DateTime periodBegin, DateTime periodEnd)
     {
       try
       {
         if (data.Trim().ToLower() == "region")
-          return await this._chartPersistence.GetRegionPieChartAsync(periodBegin, periodEnd);
+          return await this._chartPersistence.GetRegionDoughnutChartAsync(periodBegin, periodEnd);
         if (data.Trim().ToLower() == "model")
-          return await this._chartPersistence.GetModelPieChartAsync(periodBegin, periodEnd);
+          return await this._chartPersistence.GetModelDoughnutChartAsync(periodBegin, periodEnd);
 
         throw new Exception("Tipo de dado inválido");
       }
