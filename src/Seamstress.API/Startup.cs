@@ -91,6 +91,8 @@ namespace Seamstress.API
       services.AddScoped<IAzureBlobService, AzureBlobService>();
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<ITokenService, TokenService>();
+      services.AddScoped<IChartService, ChartService>();
+      services.AddScoped<IChartPersistence, ChartPersistence>();
 
       services.AddCors();
       services.AddSwaggerGen(c =>
