@@ -13,7 +13,7 @@ namespace Seamstress.Application
       this._chartPersistence = chartPersistence;
     }
 
-    public async Task<DoughnutChart> GetDoughnutChartAsync(string data, DateTime periodBegin, DateTime periodEnd)
+    public async Task<DoughnutChart> GetDoughnutChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd)
     {
       try
       {

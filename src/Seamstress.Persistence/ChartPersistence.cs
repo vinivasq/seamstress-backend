@@ -15,13 +15,13 @@ namespace Seamstress.Persistence
       this._context = context;
     }
 
-    public async Task<DoughnutChart> GetModelDoughnutChartAsync(DateTime periodBegin, DateTime periodEnd)
+    public async Task<DoughnutChart> GetModelDoughnutChartAsync(DateOnly periodBegin, DateOnly periodEnd)
     {
       try
       {
         List<ItemOrder> itemOrders = await _context.ItemOrder.Where(x =>
-          x.Order!.OrderedAt >= periodBegin &&
-          x.Order.OrderedAt <= periodEnd
+          DateOnly.FromDateTime(x.Order!.OrderedAt) >= periodBegin &&
+          DateOnly.FromDateTime(x.Order.OrderedAt) <= periodEnd
         )
         .Include(x => x.Item)
         .AsNoTracking().ToListAsync();
@@ -47,13 +47,13 @@ namespace Seamstress.Persistence
       }
     }
 
-    public async Task<DoughnutChart> GetRegionDoughnutChartAsync(DateTime periodBegin, DateTime periodEnd)
+    public async Task<DoughnutChart> GetRegionDoughnutChartAsync(DateOnly periodBegin, DateOnly periodEnd)
     {
       try
       {
         List<Customer> customers = await _context.Orders.Where(x =>
-          x.OrderedAt >= periodBegin &&
-          x.OrderedAt <= periodEnd
+          DateOnly.FromDateTime(x.OrderedAt) >= periodBegin &&
+          DateOnly.FromDateTime(x.OrderedAt) <= periodEnd
         )
         .Include(x => x.Customer)
         .Select(x => x.Customer!)

@@ -22,7 +22,7 @@ namespace Seamstress.API.Controllers
     {
       try
       {
-        DoughnutChart chartData = await this._chartService.GetDoughnutChartAsync(data, periodBegin, periodEnd);
+        DoughnutChart chartData = await this._chartService.GetDoughnutChartAsync(data, DateOnly.FromDateTime(periodBegin), DateOnly.FromDateTime(periodEnd));
         if (chartData == null || chartData.DataSets.Count == 0) return NoContent();
 
         return Ok(chartData);
