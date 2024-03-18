@@ -27,6 +27,7 @@ namespace Seamstress.Persistence.Context
     public DbSet<ItemOrder> ItemOrder { get; set; } = null!;
     public DbSet<Set> Sets { get; set; } = null!;
     public DbSet<ItemSizeMeasurement> ItemSizeMeasurements { get; set; } = null!;
+    public DbSet<SalePlatform> SalePlatforms { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

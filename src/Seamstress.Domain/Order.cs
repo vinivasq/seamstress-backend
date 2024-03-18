@@ -1,5 +1,4 @@
 using Seamstress.Domain.Enum;
-using Seamstress.Domain.Identity;
 
 namespace Seamstress.Domain
 {
@@ -14,6 +13,8 @@ namespace Seamstress.Domain
     public int ExecutorId { get; set; }
     public decimal Total { get; set; }
     public Step Step { get; set; }
+    public int? SalePlatformId { get; set; }
+    public SalePlatform? SalePlatform { get; set; }
     public int CustomerId { get; set; }
     public Customer? Customer { get; set; } = null!;
   }
