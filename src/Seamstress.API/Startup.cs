@@ -93,6 +93,8 @@ namespace Seamstress.API
       services.AddScoped<ITokenService, TokenService>();
       services.AddScoped<IChartService, ChartService>();
       services.AddScoped<IChartPersistence, ChartPersistence>();
+      services.AddScoped<ISalePlatformPersistence, SalePlatformPersistence>();
+      services.AddScoped<ISalePlatformService, SalePlatformService>();
 
       services.AddCors();
       services.AddSwaggerGen(c =>

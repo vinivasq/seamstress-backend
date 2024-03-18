@@ -18,6 +18,7 @@ namespace Seamstress.Persistence
     {
       IQueryable<Order> query = _context.Orders;
 
+      query = query.Include(order => order.SalePlatform);
       query = query.Include(order => order.Customer).ThenInclude(customer => customer.Sizings);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
@@ -45,6 +46,7 @@ namespace Seamstress.Persistence
     {
       IQueryable<Order> query = _context.Orders;
 
+      query = query.Include(order => order.SalePlatform);
       query = query.Include(order => order.Customer).ThenInclude(customer => customer.Sizings);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
