@@ -95,6 +95,8 @@ namespace Seamstress.API
       services.AddScoped<IChartPersistence, ChartPersistence>();
       services.AddScoped<ISalePlatformPersistence, SalePlatformPersistence>();
       services.AddScoped<ISalePlatformService, SalePlatformService>();
+      services.AddScoped<IStatisticsPersistence, StatisticsPersistence>();
+      services.AddScoped<IStatisticsService, StatisticsService>();
 
       services.AddCors();
       services.AddSwaggerGen(c =>
