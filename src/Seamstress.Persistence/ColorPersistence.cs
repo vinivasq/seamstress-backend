@@ -27,7 +27,11 @@ namespace Seamstress.Persistence
     {
       IQueryable<Color> query = _context.Colors.Where(c => c.Id == id);
 
-      return await query.AsNoTracking().FirstAsync();
+    }
+
+    public async Task<bool> CheckFKAsync(int id)
+    {
+      return await this._context.ItemOrder.AnyAsync(x => x.ColorId == id);
     }
   }
 }

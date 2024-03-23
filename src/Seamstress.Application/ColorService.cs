@@ -64,16 +64,36 @@ namespace Seamstress.Application
     {
       try
       {
-        var color = await _colorPersistence.GetColorByIdAsync(id);
-        if (color == null) throw new Exception("Não foi possível encontrar a cor a ser deletada.");
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar a cor a ser deletada.");
 
-        _generalPersistence.Delete<Color>(color);
 
-        return await _generalPersistence.SaveChangesAsync();
+        if (await _colorPersistence.CheckFKAsync(id) == false)
+        {
+          _generalPersistence.Delete<Color>(color);
+          return await _generalPersistence.SaveChangesAsync();
+        }
+
+        throw new Exception("Não é possível deletar pois possuem registros vinculados");
       }
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> CheckFK(int id)
+    {
+      try
+      {
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar a cor a ser validada.");
+
+        return await this._colorPersistence.CheckFKAsync(id);
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
