@@ -1,5 +1,4 @@
 using Seamstress.Domain.Enum;
-using Seamstress.Domain.Identity;
 
 namespace Seamstress.Domain
 {

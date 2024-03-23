@@ -11,5 +11,6 @@ namespace Seamstress.Domain
     public IEnumerable<ItemSize> ItemSizes { get; set; } = null!;
     public string ImageURL { get; set; } = null!;
     public decimal Price { get; set; }
+    public bool? IsActive { get; set; } = true;
   }
 }
