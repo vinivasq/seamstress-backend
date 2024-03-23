@@ -60,6 +60,22 @@ namespace Seamstress.Application
         throw new Exception(ex.Message);
       }
     }
+
+    public async Task<Color> SetActiveState(int id, bool state)
+    {
+      try
+      {
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Nâo foi possível encontrar a cor informada.");
+
+        color.IsActive = state;
+
+        _generalPersistence.Update(color);
+
+        if (await _generalPersistence.SaveChangesAsync())
+        {
+          return await _colorPersistence.GetColorByIdAsync(color.Id)
+            ?? throw new Exception("Não foi possível listar a cor após atualização.");
         }
 
         throw new Exception("Não foi possível atualizar a cor.");

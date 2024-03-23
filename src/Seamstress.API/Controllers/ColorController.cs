@@ -93,6 +93,22 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var color = await _colorService.SetActiveState(id, state);
+        if (color == null) return BadRequest("Não foi possível atualizar a cor");
+
+        return Ok(color);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar a cor. Erro: {ex.Message}");
+      }
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

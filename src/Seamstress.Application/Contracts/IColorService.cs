@@ -7,6 +7,7 @@ namespace Seamstress.Application.Contracts
   {
     public Task<Color> AddColor(Color model);
     public Task<Color> UpdateColor(int id, Color model);
+    public Task<Color> SetActiveState(int id, bool state);
     public Task<bool> CheckFK(int id);
     public Task<bool> DeleteColor(int id);
 
