@@ -29,5 +29,22 @@ namespace Seamstress.Application
         throw new Exception(ex.Message);
       }
     }
+
+    public async Task<BarLineChart> GetBarLineChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd)
+    {
+      try
+      {
+        if (data.Trim().ToLower() == "orders")
+          return await this._chartPersistence.GetOrdersBarLineChartAsync(periodBegin, periodEnd);
+        else if (data.Trim().ToLower() == "revenue")
+          return await this._chartPersistence.GetRevenueBarLineChartAsync(periodBegin, periodEnd);
+
+        throw new Exception("Tipo de dado inválido");
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(ex.Message);
+      }
+    }
   }
 }

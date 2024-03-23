@@ -5,5 +5,6 @@ namespace Seamstress.Application.Contracts
   public interface IChartService
   {
     public Task<DoughnutChart> GetDoughnutChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd);
+    public Task<BarLineChart> GetBarLineChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd);
   }
 }
