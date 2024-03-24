@@ -23,10 +23,12 @@ namespace Seamstress.Persistence
 
     }
 
-    public async Task<Fabric> GetFabricByIdAsync(int id)
+    public async Task<Fabric?> GetFabricByIdAsync(int id)
     {
       IQueryable<Fabric> query = _context.Fabrics.Where(c => c.Id == id);
 
+      return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
 
     public async Task<bool> CheckFKAsync(int id)
     {

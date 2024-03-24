@@ -23,7 +23,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _fabricPersistence.GetFabricByIdAsync(model.Id);
+          return await _fabricPersistence.GetFabricByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível encontrar o tecido após o cadastro.");
         }
 
         throw new Exception("Não foi possível cadastrar o tecido.");
@@ -39,16 +40,16 @@ namespace Seamstress.Application
     {
       try
       {
-        var fabric = await _fabricPersistence.GetFabricByIdAsync(id);
-        if (fabric == null) throw new Exception("Não foi possível encontrar o tecido a ser atualizada");
-
+        var fabric = await _fabricPersistence.GetFabricByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o tecido a ser atualizado");
         model.Id = fabric.Id;
 
         _generalPersistence.Update<Fabric>(model);
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _fabricPersistence.GetFabricByIdAsync(model.Id);
+          return await _fabricPersistence.GetFabricByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível encontrar o tecido após atualização.");
         }
 
         throw new Exception("Não foi possível atualizar o tecido.");
@@ -114,9 +115,8 @@ namespace Seamstress.Application
     {
       try
       {
-        var fabric = await _fabricPersistence.GetFabricByIdAsync(id);
-        if (fabric == null) throw new Exception("Nâo foi possível encontrar o tecido informada.");
-
+        var fabric = await _fabricPersistence.GetFabricByIdAsync(id)
+          ?? throw new Exception("Nâo foi possível encontrar o tecido informado.");
         return fabric;
       }
       catch (Exception ex)
