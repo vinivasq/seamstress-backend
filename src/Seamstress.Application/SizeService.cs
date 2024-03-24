@@ -23,7 +23,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _sizePersistence.GetSizeByIdAsync(model.Id);
+          return await _sizePersistence.GetSizeByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível listar o tamanho após o cadastro.");
         }
 
         throw new Exception("Não foi possível cadastrar o tamanho.");
@@ -35,20 +36,21 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<Size> UpdateSize(int id, Size model)
+    public async Task<Size> SetActiveState(int id, bool state)
     {
       try
       {
-        var size = await _sizePersistence.GetSizeByIdAsync(id);
-        if (size == null) throw new Exception("Não foi possível encontrar a tamanho a ser atualizado");
+        var size = await _sizePersistence.GetSizeByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o tamanho informado.");
 
-        model.Id = size.Id;
+        size.IsActive = state;
 
-        _generalPersistence.Update<Size>(model);
+        _generalPersistence.Update(size);
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _sizePersistence.GetSizeByIdAsync(model.Id);
+          return await _sizePersistence.GetSizeByIdAsync(size.Id)
+            ?? throw new Exception("Não foi possível listar o tamanho após atualização.");
         }
 
         throw new Exception("Não foi possível atualizar o tamanho.");
@@ -64,16 +66,35 @@ namespace Seamstress.Application
     {
       try
       {
-        var size = await _sizePersistence.GetSizeByIdAsync(id);
-        if (size == null) throw new Exception("Não foi possível encontrar o tamanho a ser deletado.");
+        var size = await _sizePersistence.GetSizeByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o tamanho a ser deletado.");
 
-        _generalPersistence.Delete<Size>(size);
+        if (await _sizePersistence.CheckFKAsync(id) == false)
+        {
+          _generalPersistence.Delete<Size>(size);
+          return await _generalPersistence.SaveChangesAsync();
+        }
 
-        return await _generalPersistence.SaveChangesAsync();
+        throw new Exception("Não é possível deletar pois possuem registros vinculados");
       }
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> CheckFK(int id)
+    {
+      try
+      {
+        var set = await _sizePersistence.GetSizeByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o tamanho a ser validado.");
+
+        return await _sizePersistence.CheckFKAsync(id);
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
@@ -95,10 +116,8 @@ namespace Seamstress.Application
     {
       try
       {
-        var size = await _sizePersistence.GetSizeByIdAsync(id);
-        if (size == null) throw new Exception("Nâo foi possível encontrar o tamanho informado.");
-
-        return size;
+        return await _sizePersistence.GetSizeByIdAsync(id)
+          ?? throw new Exception("Nâo foi possível encontrar o tamanho informado.");
       }
       catch (Exception ex)
       {
