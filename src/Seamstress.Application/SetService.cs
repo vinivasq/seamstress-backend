@@ -64,7 +64,7 @@ namespace Seamstress.Application
       try
       {
         var set = await _setPersistence.GetSetByIdAsync(id)
-          ?? throw new Exception("Nâo foi possível encontrar o conjunto informado.");
+          ?? throw new Exception("Não foi possível encontrar o conjunto informado.");
 
         set.IsActive = state;
 

@@ -66,7 +66,7 @@ namespace Seamstress.Application
       try
       {
         var color = await _colorPersistence.GetColorByIdAsync(id)
-          ?? throw new Exception("Nâo foi possível encontrar a cor informada.");
+          ?? throw new Exception("Não foi possível encontrar a cor informada.");
 
         color.IsActive = state;
 

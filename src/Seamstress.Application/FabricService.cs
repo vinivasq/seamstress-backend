@@ -66,7 +66,7 @@ namespace Seamstress.Application
       try
       {
         var fabric = await _fabricPersistence.GetFabricByIdAsync(id)
-          ?? throw new Exception("Nâo foi possível encontrar o tecido informado.");
+          ?? throw new Exception("Não foi possível encontrar o tecido informado.");
 
         fabric.IsActive = state;
 
