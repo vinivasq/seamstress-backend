@@ -20,11 +20,16 @@ namespace Seamstress.Persistence
       return await query.AsNoTracking().ToArrayAsync();
     }
 
-    public async Task<Set> GetSetByIdAsync(int id)
+    public async Task<Set?> GetSetByIdAsync(int id)
     {
       IQueryable<Set> query = _context.Sets.Where(set => set.Id == id);
 
-      return await query.AsNoTracking().FirstAsync();
+      return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> CheckFKAsync(int id)
+    {
+      return await this._context.Items.AnyAsync(x => x.SetId == id);
     }
   }
 }

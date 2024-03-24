@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Seamstress.Application.Contracts;
 using Seamstress.Domain;
 using Seamstress.Persistence.Contracts;
@@ -27,7 +23,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await this._setPersistence.GetSetByIdAsync(model.Id);
+          return await this._setPersistence.GetSetByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível listar o conjunto após o cadastro");
         }
 
         throw new Exception("Não foi possível criar o conjunto.");
@@ -42,16 +39,41 @@ namespace Seamstress.Application
     {
       try
       {
-        var set = await _setPersistence.GetSetByIdAsync(id);
-        if (set == null) throw new Exception("Nçao foi possível encontrar o conjunto a ser atualizado.");
-
+        var set = await _setPersistence.GetSetByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o conjunto a ser atualizado.");
         model.Id = set.Id;
 
         _generalPersistence.Update<Set>(model);
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _setPersistence.GetSetByIdAsync(model.Id);
+          return await _setPersistence.GetSetByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível listar o conjunto após atualização.");
+        }
+
+        throw new Exception("Não foi possível atualizar o conjunto.");
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+    public async Task<Set> SetActiveState(int id, bool state)
+    {
+      try
+      {
+        var set = await _setPersistence.GetSetByIdAsync(id)
+          ?? throw new Exception("Nâo foi possível encontrar o conjunto informado.");
+
+        set.IsActive = state;
+
+        _generalPersistence.Update(set);
+
+        if (await _generalPersistence.SaveChangesAsync())
+        {
+          return await _setPersistence.GetSetByIdAsync(set.Id)
+            ?? throw new Exception("Não foi possível listar o conjunto após atualização.");
         }
 
         throw new Exception("Não foi possível atualizar o conjunto.");
@@ -66,16 +88,34 @@ namespace Seamstress.Application
     {
       try
       {
-        var set = await _setPersistence.GetSetByIdAsync(id);
-        if (set == null) throw new Exception("Não foi possível encontrar o conjunto a ser deletado.");
+        var set = await _setPersistence.GetSetByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o conjunto a ser deletado.");
 
-        _generalPersistence.Delete<Set>(set);
+        if (await _setPersistence.CheckFKAsync(id) == false)
+        {
+          _generalPersistence.Delete<Set>(set);
+          return await _generalPersistence.SaveChangesAsync();
+        }
 
-        return await _generalPersistence.SaveChangesAsync();
+        throw new Exception("Não é possível deletar pois possuem registros vinculados");
       }
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+    public async Task<bool> CheckFK(int id)
+    {
+      try
+      {
+        var set = await _setPersistence.GetSetByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o conjunto a ser validado.");
+
+        return await _setPersistence.CheckFKAsync(id);
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
@@ -95,10 +135,8 @@ namespace Seamstress.Application
     {
       try
       {
-        var set = await _setPersistence.GetSetByIdAsync(id);
-        if (set == null) throw new Exception("Não foi possível encontrar o conjunto desejado.");
-
-        return set;
+        return await _setPersistence.GetSetByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o conjunto desejado.");
       }
       catch (Exception ex)
       {
