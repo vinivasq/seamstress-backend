@@ -61,6 +61,32 @@ namespace Seamstress.Application
       }
     }
 
+    public async Task<Fabric> SetActiveState(int id, bool state)
+    {
+      try
+      {
+        var fabric = await _fabricPersistence.GetFabricByIdAsync(id)
+          ?? throw new Exception("Nâo foi possível encontrar o tecido informado.");
+
+        fabric.IsActive = state;
+
+        _generalPersistence.Update(fabric);
+
+        if (await _generalPersistence.SaveChangesAsync())
+        {
+          return await _fabricPersistence.GetFabricByIdAsync(fabric.Id)
+            ?? throw new Exception("Não foi possível listar a cor após atualização.");
+        }
+
+        throw new Exception("Não foi possível atualizar a cor.");
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
     public async Task<bool> DeleteFabric(int id)
     {
       try
