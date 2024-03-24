@@ -75,10 +75,10 @@ namespace Seamstress.Application
         if (await _generalPersistence.SaveChangesAsync())
         {
           return await _fabricPersistence.GetFabricByIdAsync(fabric.Id)
-            ?? throw new Exception("Não foi possível listar a cor após atualização.");
+            ?? throw new Exception("Não foi possível listar o tecido após atualização.");
         }
 
-        throw new Exception("Não foi possível atualizar a cor.");
+        throw new Exception("Não foi possível atualizar o tecido.");
       }
       catch (Exception ex)
       {
@@ -113,7 +113,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var color = await _fabricPersistence.GetFabricByIdAsync(id)
+        var fabric = await _fabricPersistence.GetFabricByIdAsync(id)
           ?? throw new Exception("Não foi possível encontrar o tecido a ser validado.");
 
         return await _fabricPersistence.CheckFKAsync(id);
