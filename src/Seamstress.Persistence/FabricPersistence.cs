@@ -27,7 +27,10 @@ namespace Seamstress.Persistence
     {
       IQueryable<Fabric> query = _context.Fabrics.Where(c => c.Id == id);
 
-      return await query.AsNoTracking().FirstAsync();
+
+    public async Task<bool> CheckFKAsync(int id)
+    {
+      return await this._context.ItemOrder.AnyAsync(x => x.FabricId == id);
     }
   }
 }

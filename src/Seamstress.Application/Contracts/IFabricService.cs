@@ -7,6 +7,7 @@ namespace Seamstress.Application.Contracts
   {
     public Task<Fabric> AddFabric(Fabric model);
     public Task<Fabric> UpdateFabric(int id, Fabric model);
+    public Task<bool> CheckFK(int id);
     public Task<bool> DeleteFabric(int id);
 
 

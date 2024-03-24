@@ -48,6 +48,19 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _fabricService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível verificar o tecido. Erro: {ex.Message}");
+      }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Fabric model)
     {
