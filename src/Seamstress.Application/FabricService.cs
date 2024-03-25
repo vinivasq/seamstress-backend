@@ -100,7 +100,7 @@ namespace Seamstress.Application
           return await _generalPersistence.SaveChangesAsync();
         }
 
-        throw new Exception("Não é possível deletar pois possuem registros vinculados");
+        throw new Exception("Não é possível deletar pois existem registros vinculados");
       }
       catch (Exception ex)
       {
