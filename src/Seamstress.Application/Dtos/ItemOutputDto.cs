@@ -11,6 +11,7 @@ namespace Seamstress.Application.Dtos
     public IEnumerable<Fabric> Fabrics { get; set; } = null!;
     public IEnumerable<ItemSizeDto> ItemSizes { get; set; } = null!;
     public string ImageURL { get; set; } = null!;
+    public bool IsActive { get; set; }
     public decimal Price { get; set; }
   }
 }

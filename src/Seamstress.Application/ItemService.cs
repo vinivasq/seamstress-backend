@@ -39,7 +39,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var itemResponse = await _itemPersistence.GetItemByIdAsync(item.Id);
+          var itemResponse = await _itemPersistence.GetItemByIdAsync(item.Id)
+            ?? throw new Exception("Não foi possível encontrar o item após o cadastro.");
 
           return _mapper.Map<ItemOutputDto>(itemResponse);
         }
@@ -131,7 +132,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id);
+          var itemResponse = await _itemPersistence.GetItemByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível encontrar o item após atualização.");
           return _mapper.Map<ItemOutputDto>(itemResponse);
         }
 
@@ -144,25 +146,73 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<bool> DeleteITem(int id)
+    public async Task<ItemOutputDto> SetActiveState(int id, bool state)
     {
       try
       {
-        var item = await _itemPersistence.GetItemByIdAsync(id) ?? throw new Exception("Não foi possível encontrar o item a ser deletado.");
-        List<string> images = item.ImageURL.Split(";").ToList();
+        var item = await _itemPersistence.GetItemByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o item informada.");
 
-        images.ForEach(image =>
+        item.IsActive = state;
+
+        _generalPersistence.Update(item);
+
+        if (await _generalPersistence.SaveChangesAsync())
         {
-          this._azureService.DeleteModelImage(image);
-        });
+          var itemResponse = await _itemPersistence.GetItemByIdAsync(item.Id)
+            ?? throw new Exception("Não foi possível listar o item após atualização.");
+          return _mapper.Map<ItemOutputDto>(itemResponse);
+        }
 
-        _generalPersistence.Delete(item);
-
-        return await _generalPersistence.SaveChangesAsync();
+        throw new Exception("Não foi possível atualizar o item.");
       }
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> DeleteITem(int id)
+    {
+      try
+      {
+        var item = await _itemPersistence.GetItemWithoutAttributesAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o item a ser deletado.");
+        List<string> images = item.ImageURL.Split(";").ToList();
+
+        if (await _itemPersistence.CheckFKAsync(id) == false)
+        {
+          images.ForEach(image =>
+          {
+            this._azureService.DeleteModelImage(image);
+          });
+
+          _generalPersistence.Delete(item);
+
+          return await _generalPersistence.SaveChangesAsync();
+        }
+
+        throw new Exception("Não é possível deletar pois existem registros vinculados");
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> CheckFK(int id)
+    {
+      try
+      {
+        var item = await _itemPersistence.GetItemWithoutAttributesAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o item a ser validado.");
+
+        return await this._itemPersistence.CheckFKAsync(id);
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
@@ -184,7 +234,8 @@ namespace Seamstress.Application
     {
       try
       {
-        return await _itemPersistence.GetItemByIdAsync(id);
+        return await _itemPersistence.GetItemByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o item");
       }
       catch (Exception ex)
       {
