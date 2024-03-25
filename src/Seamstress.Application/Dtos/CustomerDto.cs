@@ -54,5 +54,6 @@ namespace Seamstress.Application.Dtos
     [EmailAddress(ErrorMessage = "Deve ser um {0} válido")]
     public string Email { get; set; } = null!;
     public Sizings? Sizings { get; set; }
+    public bool? IsActive { get; set; }
   }
 }

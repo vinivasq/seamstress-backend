@@ -49,23 +49,28 @@ namespace Seamstress.Persistence
       return await PageList<Customer>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
     }
 
-    public async Task<Customer> GetCustomerByIdAsync(int id)
+    public async Task<Customer?> GetCustomerByIdAsync(int id)
     {
       IQueryable<Customer> query = _context.Customers;
 
       query = query.Include(customer => customer.Sizings);
       query = query.Where(customer => customer.Id == id);
 
-      return await query.AsNoTracking().FirstAsync();
+      return await query.AsNoTracking().FirstOrDefaultAsync();
     }
 
-    public async Task<Customer> GetCustomerByPKAsync(string CPF_CNPJ)
+    public async Task<Customer?> GetCustomerByPKAsync(string CPF_CNPJ)
     {
       IQueryable<Customer> query = _context.Customers;
 
       query = query.Where(customer => customer.CPF_CNPJ == CPF_CNPJ);
 
       return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> CheckFKAsync(int id)
+    {
+      return await this._context.Orders.AnyAsync(x => x.CustomerId == id);
     }
   }
 }
