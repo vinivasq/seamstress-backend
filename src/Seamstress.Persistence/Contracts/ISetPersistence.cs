@@ -5,6 +5,7 @@ namespace Seamstress.Persistence.Contracts
   public interface ISetPersistence
   {
     Task<Set[]> GetAllSetsAsync();
-    Task<Set> GetSetByIdAsync(int id);
+    Task<Set?> GetSetByIdAsync(int id);
+    Task<bool> CheckFKAsync(int id);
   }
 }

@@ -88,14 +88,63 @@ namespace Seamstress.Application
       }
     }
 
+    public async Task<CustomerDto> SetActiveState(int id, bool state)
+    {
+      try
+      {
+        var customer = await _customerPersistence.GetCustomerByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o cliente informado.");
+
+        customer.IsActive = state;
+
+        _generalPersistence.Update(customer);
+
+        if (await _generalPersistence.SaveChangesAsync())
+        {
+          var customerResponse = await _customerPersistence.GetCustomerByIdAsync(customer.Id)
+            ?? throw new Exception("Não foi possível listar o cliente após atualização.");
+
+          return _mapper.Map<CustomerDto>(customerResponse);
+        }
+
+        throw new Exception("Não foi possível atualizar o cliente.");
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
     public async Task<bool> DeleteCustomer(int id)
     {
       try
       {
-        var customer = await _customerPersistence.GetCustomerByIdAsync(id) ?? throw new Exception("Não foi posível encontrar o cliente");
-        _generalPersistence.Delete(customer);
+        var customer = await _customerPersistence.GetCustomerByIdAsync(id)
+          ?? throw new Exception("Não foi posível encontrar o cliente");
 
-        return await _generalPersistence.SaveChangesAsync();
+        if (await _customerPersistence.CheckFKAsync(id) == false)
+        {
+          _generalPersistence.Delete(customer);
+          return await _generalPersistence.SaveChangesAsync();
+        }
+
+        throw new Exception("Não é possível deletar pois existem registros vinculados");
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> CheckFK(int id)
+    {
+      try
+      {
+        var customer = await _customerPersistence.GetCustomerByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o cliente a ser validado.");
+
+        return await this._customerPersistence.CheckFKAsync(id);
       }
       catch (Exception ex)
       {

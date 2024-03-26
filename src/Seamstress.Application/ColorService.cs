@@ -23,7 +23,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _colorPersistence.GetColorByIdAsync(model.Id);
+          return await _colorPersistence.GetColorByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível listar a cor após criação."); ;
         }
 
         throw new Exception("Não foi possível cadastrar a cor.");
@@ -39,16 +40,42 @@ namespace Seamstress.Application
     {
       try
       {
-        var color = await _colorPersistence.GetColorByIdAsync(id);
-        if (color == null) throw new Exception("Não foi possível encontrar a cor a ser atualizada");
-
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar a cor a ser atualizada");
         model.Id = color.Id;
 
         _generalPersistence.Update<Color>(model);
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          return await _colorPersistence.GetColorByIdAsync(model.Id);
+          return await _colorPersistence.GetColorByIdAsync(model.Id)
+            ?? throw new Exception("Não foi possível listar a cor após atualização.");
+        }
+
+        throw new Exception("Não foi possível atualizar a cor.");
+      }
+      catch (Exception ex)
+      {
+
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<Color> SetActiveState(int id, bool state)
+    {
+      try
+      {
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar a cor informada.");
+
+        color.IsActive = state;
+
+        _generalPersistence.Update(color);
+
+        if (await _generalPersistence.SaveChangesAsync())
+        {
+          return await _colorPersistence.GetColorByIdAsync(color.Id)
+            ?? throw new Exception("Não foi possível listar a cor após atualização.");
         }
 
         throw new Exception("Não foi possível atualizar a cor.");
@@ -64,16 +91,36 @@ namespace Seamstress.Application
     {
       try
       {
-        var color = await _colorPersistence.GetColorByIdAsync(id);
-        if (color == null) throw new Exception("Não foi possível encontrar a cor a ser deletada.");
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar a cor a ser deletada.");
 
-        _generalPersistence.Delete<Color>(color);
 
-        return await _generalPersistence.SaveChangesAsync();
+        if (await _colorPersistence.CheckFKAsync(id) == false)
+        {
+          _generalPersistence.Delete<Color>(color);
+          return await _generalPersistence.SaveChangesAsync();
+        }
+
+        throw new Exception("Não é possível deletar pois existem registros vinculados");
       }
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<bool> CheckFK(int id)
+    {
+      try
+      {
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar a cor a ser validada.");
+
+        return await this._colorPersistence.CheckFKAsync(id);
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
@@ -95,9 +142,8 @@ namespace Seamstress.Application
     {
       try
       {
-        var color = await _colorPersistence.GetColorByIdAsync(id);
-        if (color == null) throw new Exception("Nâo foi possível encontrar a cor informada.");
-
+        var color = await _colorPersistence.GetColorByIdAsync(id)
+          ?? throw new Exception("Nâo foi possível encontrar a cor informada.");
         return color;
       }
       catch (Exception ex)

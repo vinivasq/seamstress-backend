@@ -21,10 +21,10 @@ namespace Seamstress.API.Controllers
     {
       try
       {
-        var colors = await _fabricService.GetFabricsAsync();
-        if (colors == null) return NoContent();
+        var fabrics = await _fabricService.GetFabricsAsync();
+        if (fabrics == null) return NoContent();
 
-        return Ok(colors);
+        return Ok(fabrics);
       }
       catch (Exception ex)
       {
@@ -37,14 +37,27 @@ namespace Seamstress.API.Controllers
     {
       try
       {
-        var color = await _fabricService.GetFabricByIdAsync(id);
-        if (color == null) return NoContent();
+        var fabric = await _fabricService.GetFabricByIdAsync(id);
+        if (fabric == null) return NoContent();
 
-        return Ok(color);
+        return Ok(fabric);
       }
       catch (Exception ex)
       {
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível listar o tecido. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _fabricService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível verificar o tecido. Erro: {ex.Message}");
       }
     }
 
@@ -80,12 +93,28 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var fabric = await _fabricService.SetActiveState(id, state);
+        if (fabric == null) return BadRequest("Não foi possível atualizar o tecido");
+
+        return Ok(fabric);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar o tecido. Erro: {ex.Message}");
+      }
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
       try
       {
-        return await _fabricService.DeleteFabric(id) ? Ok(new { message = "Tecido deletada com sucesso." }) : BadRequest("Não foi possível deletar o tecido");
+        return await _fabricService.DeleteFabric(id) ? Ok(new { message = "Tecido deletado com sucesso." }) : BadRequest("Não foi possível deletar o tecido");
       }
       catch (Exception ex)
       {

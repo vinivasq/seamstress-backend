@@ -27,7 +27,7 @@ namespace Seamstress.Persistence
 
       return await query.AsNoTracking().ToArrayAsync();
     }
-    public async Task<Item> GetItemByIdAsync(int id)
+    public async Task<Item?> GetItemByIdAsync(int id)
     {
       IQueryable<Item> query = _context.Items;
 
@@ -38,7 +38,24 @@ namespace Seamstress.Persistence
       query = query.Include(item => item.Set);
       query = query.Where(x => x.Id == id);
 
-      return await query.AsNoTracking().FirstAsync();
+      return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
+
+    public async Task<Item?> GetItemWithoutAttributesAsync(int id)
+    {
+      IQueryable<Item> query = _context.Items;
+
+      query = query.Include(item => item.ItemColors);
+      query = query.Include(item => item.ItemFabrics);
+      query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Measurements);
+      query = query.Where(x => x.Id == id);
+
+      return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> CheckFKAsync(int id)
+    {
+      return await _context.ItemOrder.AnyAsync(x => x.ItemId == id);
     }
   }
 }

@@ -48,6 +48,19 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _colorService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível listar a cor. Erro: {ex.Message}");
+      }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Color model)
     {
@@ -70,6 +83,22 @@ namespace Seamstress.API.Controllers
       try
       {
         var color = await _colorService.UpdateColor(id, model);
+        if (color == null) return BadRequest("Não foi possível atualizar a cor");
+
+        return Ok(color);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar a cor. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var color = await _colorService.SetActiveState(id, state);
         if (color == null) return BadRequest("Não foi possível atualizar a cor");
 
         return Ok(color);
