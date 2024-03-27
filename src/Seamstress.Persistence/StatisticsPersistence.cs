@@ -42,7 +42,7 @@ namespace Seamstress.Persistence
               })
               .OrderByDescending(x => x.Count)
               .Select(x => x.Platform)
-              .AsNoTracking().FirstAsync()
+              .AsNoTracking().FirstOrDefaultAsync() ?? "Não informado"
           )
         },
         new ()
