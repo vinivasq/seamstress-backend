@@ -63,6 +63,31 @@ namespace Seamstress.Persistence.Context
                                   .WithOne(IO => IO.Order)
                                   .HasForeignKey(IO => IO.OrderId)
                                   .OnDelete(DeleteBehavior.Cascade);
+
+
+      modelBuilder.Entity<Customer>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
+
+      modelBuilder.Entity<Item>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
+
+      modelBuilder.Entity<Color>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
+
+      modelBuilder.Entity<Fabric>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
+
+      modelBuilder.Entity<Set>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
+
+      modelBuilder.Entity<Size>()
+            .Property(c => c.IsActive)
+            .HasDefaultValue(true);
     }
   }
 }

@@ -23,11 +23,16 @@ namespace Seamstress.Persistence
 
     }
 
-    public async Task<Size> GetSizeByIdAsync(int id)
+    public async Task<Size?> GetSizeByIdAsync(int id)
     {
       IQueryable<Size> query = _context.Sizes.Where(c => c.Id == id);
 
-      return await query.AsNoTracking().FirstAsync();
+      return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> CheckFKAsync(int id)
+    {
+      return await _context.ItemOrder.AnyAsync(x => x.SizeId == id);
     }
   }
 }

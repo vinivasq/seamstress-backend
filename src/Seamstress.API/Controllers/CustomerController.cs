@@ -53,13 +53,26 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _customerService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível listar o cliente. Erro: {ex.Message}");
+      }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(CustomerDto model)
     {
       try
       {
         var customer = await _customerService.AddCustomer(model);
-        if (customer == null) return BadRequest("Não foi possível criar o pedido");
+        if (customer == null) return BadRequest("Não foi possível criar o cliente");
 
         return Ok(customer);
       }
@@ -85,6 +98,21 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpPatch("active/{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var customer = await _customerService.SetActiveState(id, state);
+        if (customer == null) return BadRequest("Não foi possível atualizar o cliente");
+
+        return Ok(customer);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar o cliente. Erro: {ex.Message}");
+      }
+    }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

@@ -48,6 +48,19 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _sizeService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível verificar o tamanho. Erro: {ex.Message}");
+      }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Size model)
     {
@@ -61,6 +74,22 @@ namespace Seamstress.API.Controllers
       catch (Exception ex)
       {
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível criar o tamanho. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var size = await _sizeService.SetActiveState(id, state);
+        if (size == null) return BadRequest("Não foi possível atualizar o tamanho");
+
+        return Ok(size);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar o tamanho. Erro: {ex.Message}");
       }
     }
 

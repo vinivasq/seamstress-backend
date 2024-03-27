@@ -8,6 +8,8 @@ namespace Seamstress.Application.Contracts
   {
     public Task<CustomerDto> AddCustomer(CustomerDto model);
     public Task<CustomerDto> UpdateCustomer(int id, CustomerDto model);
+    public Task<CustomerDto> SetActiveState(int id, bool state);
+    public Task<bool> CheckFK(int id);
     public Task<bool> DeleteCustomer(int id);
 
 

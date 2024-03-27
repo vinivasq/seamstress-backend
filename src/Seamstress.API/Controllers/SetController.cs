@@ -50,6 +50,19 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _setService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível verificar o conjunto. Erro: {ex.Message}");
+      }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Set model)
     {
@@ -81,6 +94,22 @@ namespace Seamstress.API.Controllers
       {
 
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o conjunto. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var set = await _setService.SetActiveState(id, state);
+        if (set == null) return BadRequest("Não foi possível atualizar o conjunto");
+
+        return Ok(set);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar o conjunto. Erro: {ex.Message}");
       }
     }
 

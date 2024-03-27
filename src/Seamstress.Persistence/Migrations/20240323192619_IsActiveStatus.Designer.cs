@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Seamstress.Persistence.Context;
@@ -11,9 +12,10 @@ using Seamstress.Persistence.Context;
 namespace Seamstress.Persistence.Migrations
 {
     [DbContext(typeof(SeamstressContext))]
-    partial class SeamstressContextModelSnapshot : ModelSnapshot
+    [Migration("20240323192619_IsActiveStatus")]
+    partial class IsActiveStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -536,9 +538,6 @@ namespace Seamstress.Persistence.Migrations
                     b.Property<DateTime>("OrderedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("SalePlatformId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Step")
                         .HasColumnType("integer");
 
@@ -548,8 +547,6 @@ namespace Seamstress.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("SalePlatformId");
 
                     b.ToTable("Orders");
                 });
@@ -567,23 +564,6 @@ namespace Seamstress.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("OrdersUser");
-                });
-
-            modelBuilder.Entity("Seamstress.Domain.SalePlatform", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SalePlatforms");
                 });
 
             modelBuilder.Entity("Seamstress.Domain.Set", b =>
@@ -871,13 +851,7 @@ namespace Seamstress.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Seamstress.Domain.SalePlatform", "SalePlatform")
-                        .WithMany()
-                        .HasForeignKey("SalePlatformId");
-
                     b.Navigation("Customer");
-
-                    b.Navigation("SalePlatform");
                 });
 
             modelBuilder.Entity("Seamstress.Domain.OrderUser", b =>

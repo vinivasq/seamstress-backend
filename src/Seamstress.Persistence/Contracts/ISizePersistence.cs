@@ -5,6 +5,7 @@ namespace Seamstress.Persistence.Contracts
   public interface ISizePersistence
   {
     Task<Size[]> GetAllSizesAsync();
-    Task<Size> GetSizeByIdAsync(int id);
+    Task<Size?> GetSizeByIdAsync(int id);
+    Task<bool> CheckFKAsync(int id);
   }
 }

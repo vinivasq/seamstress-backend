@@ -52,6 +52,19 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpGet("fk/{id}")]
+    public async Task<IActionResult> CheckFK(int id)
+    {
+      try
+      {
+        return Ok(await _itemService.CheckFK(id));
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível verificar o modelo. Erro: {ex.Message}");
+      }
+    }
+
     [HttpPost]
     public async Task<ActionResult> Post(ItemInputDto model)
     {
@@ -83,6 +96,22 @@ namespace Seamstress.API.Controllers
       {
 
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o modelo. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> SetActiveState(int id, [FromQuery] bool state)
+    {
+      try
+      {
+        var item = await _itemService.SetActiveState(id, state);
+        if (item == null) return BadRequest("Não foi possível atualizar o modelo");
+
+        return Ok(item);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível editar o modelo. Erro: {ex.Message}");
       }
     }
 
