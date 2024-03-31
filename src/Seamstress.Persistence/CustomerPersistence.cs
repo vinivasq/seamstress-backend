@@ -41,7 +41,7 @@ namespace Seamstress.Persistence
 
         });
 
-        query = query.Where(expression);
+        query = query.Where(expression).Union(_context.Customers.Where(x => x.CPF_CNPJ.StartsWith(pageParams.Term)).Include(x => x.Sizings));
       }
 
       query = query.OrderBy(customer => customer.Name.Trim().ToLower()).AsNoTracking();
