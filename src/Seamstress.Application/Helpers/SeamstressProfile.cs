@@ -1,8 +1,8 @@
 using AutoMapper;
-using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Domain.Identity;
+using Seamstress.Persistence.Models.ViewModels;
 
 namespace Seamstress.Application.Helpers
 {
@@ -34,6 +34,10 @@ namespace Seamstress.Application.Helpers
         .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.ItemColors.Select(ic => ic.Color)))
         .ForMember(dest => dest.Fabrics, opt => opt.MapFrom(src => src.ItemFabrics.Select(ic => ic.Fabric)));
       CreateMap<User, UserDto>().ReverseMap();
+      CreateMap<DataSet, DataSetDto>()
+      .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.SalePlatform.Name));
+      CreateMap<BarLineChart, BarLineChartDto>()
+      .ForMember(dest => dest.DataSets, opt => opt.MapFrom(src => src.DataSets));
     }
   }
 }

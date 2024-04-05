@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
+using Seamstress.Application.Dtos;
 using Seamstress.Persistence.Models.ViewModels;
 
 namespace Seamstress.API.Controllers
@@ -42,7 +43,7 @@ namespace Seamstress.API.Controllers
     {
       try
       {
-        BarLineChart barLineChart = await this._chartService.GetBarLineChartAsync(
+        BarLineChartDto barLineChart = await this._chartService.GetBarLineChartAsync(
           data,
           DateOnly.FromDateTime(periodBegin),
           DateOnly.FromDateTime(periodEnd)

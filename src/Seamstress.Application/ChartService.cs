@@ -1,4 +1,6 @@
+using AutoMapper;
 using Seamstress.Application.Contracts;
+using Seamstress.Application.Dtos;
 using Seamstress.Persistence.Contracts;
 using Seamstress.Persistence.Models.ViewModels;
 
@@ -7,10 +9,12 @@ namespace Seamstress.Application
   public class ChartService : IChartService
   {
     private readonly IChartPersistence _chartPersistence;
+    private readonly IMapper _mapper;
 
-    public ChartService(IChartPersistence chartPersistence)
+    public ChartService(IChartPersistence chartPersistence, IMapper mapper)
     {
       this._chartPersistence = chartPersistence;
+      this._mapper = mapper;
     }
 
     public async Task<DoughnutChart> GetDoughnutChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd)
@@ -30,16 +34,21 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<BarLineChart> GetBarLineChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd)
+    public async Task<BarLineChartDto> GetBarLineChartAsync(string data, DateOnly periodBegin, DateOnly periodEnd)
     {
       try
       {
-        if (data.Trim().ToLower() == "orders")
-          return await this._chartPersistence.GetOrdersBarLineChartAsync(periodBegin, periodEnd);
-        else if (data.Trim().ToLower() == "revenue")
-          return await this._chartPersistence.GetRevenueBarLineChartAsync(periodBegin, periodEnd);
+        BarLineChart barLineChart = new() { };
 
-        throw new Exception("Tipo de dado inválido");
+
+        if (data.Trim().ToLower() == "orders")
+          barLineChart = await this._chartPersistence.GetOrdersBarLineChartAsync(periodBegin, periodEnd);
+        else if (data.Trim().ToLower() == "revenue")
+          barLineChart = await this._chartPersistence.GetRevenueBarLineChartAsync(periodBegin, periodEnd);
+        else
+          throw new Exception("Tipo de dado inválido");
+
+        return _mapper.Map<BarLineChartDto>(barLineChart);
       }
       catch (Exception ex)
       {

@@ -5,7 +5,7 @@ namespace Seamstress.Persistence.Models.ViewModels
   public class BarLineChart
   {
     public List<DataSet> DataSets { get; set; } = new() { };
-    public List<string> Labels { get; set; } = null!;
+    public List<string> Labels { get; set; } = new() { };
   }
   public class DataSet
   {
