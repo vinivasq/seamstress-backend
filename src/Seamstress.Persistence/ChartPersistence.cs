@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Seamstress.Domain;
 using Seamstress.Persistence.Context;
@@ -90,9 +91,12 @@ namespace Seamstress.Persistence
           DateOnly.FromDateTime(x.OrderedAt) <= periodEnd
         )
         .Include(x => x.SalePlatform)
+        .OrderBy(x => x.OrderedAt)
         .AsNoTracking().ToListAsync();
 
-        List<SalePlatform> salePlatforms = orders.Select(x => x.SalePlatform!).Distinct().ToList();
+        if (orders.Count == 0) return barLineChart;
+
+        List<SalePlatform> salePlatforms = orders.Select(x => x.SalePlatform!).Where(x => x != null).DistinctBy(x => x.Id).ToList();
 
         salePlatforms.ForEach(platform =>
         {
@@ -105,6 +109,105 @@ namespace Seamstress.Persistence
           );
         });
 
+        int daysBetween = (periodEnd.ToDateTime(new()) - periodBegin.ToDateTime(new())).Days;
+
+        if (daysBetween <= 7)
+        {
+
+          var ordersByDayOfWeek = orders
+            .GroupBy(order => order.OrderedAt)
+            .SelectMany(group =>
+              group.GroupBy(order => order.SalePlatformId)
+                .Select(platformGroup => new
+                {
+                  group.Key,
+                  DayOfWeek = group.Key.ToString("dddd", new CultureInfo("pt-BR")),
+                  Platform = platformGroup.First().SalePlatform!,
+                  Count = platformGroup.Count(),
+                }
+                )
+              )
+            .OrderBy(x => x.Key);
+
+          var daysOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.DayNames;
+
+          barLineChart.Labels.AddRange(daysOfWeek);
+
+          for (int i = 0; i < daysOfWeek.Length; i++)
+          {
+
+            barLineChart.DataSets.ForEach(x => x.Data.Add(0));
+
+            barLineChart.DataSets.ForEach(x =>
+              x.Data[i] = ordersByDayOfWeek
+                .Where(y => y.DayOfWeek == daysOfWeek[i] && y.Platform.Id == x.SalePlatform.Id).Select(x => x.Count).FirstOrDefault()
+            );
+
+          }
+
+        }
+        else if (daysBetween <= 31)
+        {
+
+          var ordersByWeek = orders.GroupBy(order =>
+            CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+                order.OrderedAt, CalendarWeekRule.FirstDay, DayOfWeek.Sunday)
+            )
+            .SelectMany(group =>
+              group.GroupBy(order => order.SalePlatformId)
+                .Select(platformGroup => new
+                {
+                  Week = group.Key,
+                  Platform = platformGroup.First().SalePlatform!,
+                  Count = platformGroup.Count(),
+                  Key = group.First().OrderedAt
+                })
+            )
+            .OrderBy(x => x.Key);
+
+          foreach (var order in ordersByWeek)
+          {
+            barLineChart.DataSets.First(x => x.SalePlatform.Id == order.Platform.Id)
+              .Data.Add(order.Count);
+
+            if (barLineChart.Labels.Any(x => x == order.Key.ToString("dd/MM")) == false)
+            {
+              barLineChart.Labels.Add(order.Key.ToString("dd/MM"));
+            }
+          }
+
+        }
+        else
+        {
+
+          var ordersByMonth = orders.GroupBy(order =>
+            CultureInfo.CurrentCulture.Calendar.GetMonth(order.OrderedAt)
+            )
+            .SelectMany(group =>
+              group.GroupBy(order => order.SalePlatformId)
+                .Select(platformGroup => new
+                {
+                  Month = group.Key,
+                  Platform = platformGroup.First().SalePlatform!,
+                  Count = platformGroup.Count(),
+                  Key = group.First().OrderedAt
+                })
+            )
+            .OrderBy(x => x.Key);
+
+          foreach (var order in ordersByMonth)
+          {
+            barLineChart.DataSets.First(x => x.SalePlatform.Id == order.Platform.Id)
+              .Data.Add(order.Count);
+
+            if (barLineChart.Labels.Any(x => x == order.Key.ToString("MMMM")) == false)
+            {
+              barLineChart.Labels.Add(order.Key.ToString("MMMM"));
+            }
+          }
+
+        }
+
         barLineChart.DataSets.Add(new()
         {
           Data = new() { },
@@ -114,21 +217,22 @@ namespace Seamstress.Persistence
             Id = 0,
             Name = "Total"
           }
-        }
-        );
+        });
 
-        foreach (var order in orders.GroupBy(x => x.SalePlatformId)
-                                          .Select(group => new
-                                          {
-                                            Platform = group.First().SalePlatform!,
-                                            Count = group.Count()
-                                          }).OrderByDescending(x => x.Count))
+        for (int i = 0; i < barLineChart.DataSets[0].Data.Count; i++)
         {
-          barLineChart.DataSets.Where(x => x.SalePlatform == order.Platform)
-          .First().Data.Add(order.Count);
+          int total = 0;
+          int platfomsAmount = barLineChart.DataSets.Where(x => x.SalePlatform.Id != 0).Count();
+
+          for (int y = 0; y < platfomsAmount; y++)
+          {
+            total += barLineChart.DataSets[y].Data[i];
+          }
+
+          barLineChart.DataSets.First(x => x.SalePlatform.Id == 0).Data.Add(total);
         }
 
-        throw new NotImplementedException();
+        return barLineChart;
       }
       catch (Exception ex)
       {
