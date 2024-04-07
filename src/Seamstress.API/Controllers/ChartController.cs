@@ -23,13 +23,22 @@ namespace Seamstress.API.Controllers
     {
       try
       {
-        DoughnutChart chartData = await this._chartService.GetDoughnutChartAsync(
-          data,
-          DateOnly.FromDateTime(periodBegin),
-          DateOnly.FromDateTime(periodEnd)
-        );
-        if (chartData == null || chartData.DataSets.Count == 0) return NoContent();
+        DoughnutChart chartData = new() { };
 
+        if (data.Trim().ToLower() == "region")
+          chartData = await this._chartService.GetRegionDoughnutChartAsync(
+            DateOnly.FromDateTime(periodBegin),
+            DateOnly.FromDateTime(periodEnd)
+          );
+        else if (data.Trim().ToLower() == "model")
+          chartData = await this._chartService.GetModelDoughnutChartAsync(
+            DateOnly.FromDateTime(periodBegin),
+            DateOnly.FromDateTime(periodEnd)
+          );
+        else
+          return BadRequest("Tipo de dado inválido");
+
+        if (chartData == null || chartData.DataSets.Count == 0) return NoContent();
         return Ok(chartData);
       }
       catch (Exception ex)
@@ -43,14 +52,25 @@ namespace Seamstress.API.Controllers
     {
       try
       {
-        BarLineChartDto barLineChart = await this._chartService.GetBarLineChartAsync(
-          data,
-          DateOnly.FromDateTime(periodBegin),
-          DateOnly.FromDateTime(periodEnd)
-        );
-        if (barLineChart == null || barLineChart.DataSets.Count == 0) return NoContent();
-
-        return Ok(barLineChart);
+        if (data.Trim().ToLower() == "orders")
+        {
+          BarLineChartDto chartData = await this._chartService.GetOrderBarLineChartAsync(
+              DateOnly.FromDateTime(periodBegin),
+              DateOnly.FromDateTime(periodEnd)
+            );
+          if (chartData == null || chartData.DataSets.Count == 0) return NoContent();
+          return Ok(chartData);
+        }
+        else if (data.Trim().ToLower() == "revenue")
+        {
+          RevenueBarLineChartDto chartData = await this._chartService.GetRevenueBarLineChartAsync(
+              DateOnly.FromDateTime(periodBegin),
+              DateOnly.FromDateTime(periodEnd)
+            );
+          if (chartData == null || chartData.DataSets.Count == 0) return NoContent();
+          return Ok(chartData);
+        }
+        return BadRequest("Tipo de dado inválido");
       }
       catch (Exception ex)
       {
