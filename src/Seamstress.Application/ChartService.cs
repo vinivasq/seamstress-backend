@@ -148,17 +148,19 @@ namespace Seamstress.Application
             )
             .OrderBy(x => x.Key);
 
-          foreach (var order in ordersByWeek)
-          {
-            barLineChart.DataSets.First(x => x.SalePlatform.Id == order.Platform.Id)
-              .Data.Add(order.Count);
+          List<int> weeksOfMonth = ordersByWeek.Select(x => x.Week).Distinct().ToList();
 
-            if (barLineChart.Labels.Any(x => x == order.Key.ToString("dd/MM")) == false)
-            {
-              barLineChart.Labels.Add(order.Key.ToString("dd/MM"));
-            }
+          for (int i = 0; i < weeksOfMonth.Count; i++)
+          {
+            barLineChart.DataSets.ForEach(x => x.Data.Add(0));
+
+            barLineChart.DataSets.ForEach(x =>
+              x.Data[i] = ordersByWeek
+                .Where(y => y.Week == weeksOfMonth[i] && y.Platform.Id == x.SalePlatform.Id).Select(x => x.Count).FirstOrDefault()
+            );
           }
 
+          barLineChart.Labels.AddRange(ordersByWeek.Select(x => $"Semana {x.Key:dd/MM}").Distinct());
         }
         else
         {
@@ -178,17 +180,19 @@ namespace Seamstress.Application
             )
             .OrderBy(x => x.Key);
 
-          foreach (var order in ordersByMonth)
-          {
-            barLineChart.DataSets.First(x => x.SalePlatform.Id == order.Platform.Id)
-              .Data.Add(order.Count);
+          List<int> monthsOfYear = ordersByMonth.Select(x => x.Month).Distinct().ToList();
 
-            if (barLineChart.Labels.Any(x => x == order.Key.ToString("MMMM")) == false)
-            {
-              barLineChart.Labels.Add(order.Key.ToString("MMMM"));
-            }
+          for (int i = 0; i < monthsOfYear.Count; i++)
+          {
+            barLineChart.DataSets.ForEach(x => x.Data.Add(0));
+
+            barLineChart.DataSets.ForEach(x =>
+              x.Data[i] = ordersByMonth
+                .Where(y => y.Month == monthsOfYear[i] && y.Platform.Id == x.SalePlatform.Id).Select(x => x.Count).FirstOrDefault()
+            );
           }
 
+          barLineChart.Labels.AddRange(ordersByMonth.Select(x => x.Key.ToString("MMMM")).Distinct());
         }
 
         barLineChart.DataSets.Add(new()
@@ -303,16 +307,19 @@ namespace Seamstress.Application
             )
             .OrderBy(x => x.Key);
 
-          foreach (var order in ordersByWeek)
-          {
-            revenueBarLineChart.DataSets.First(x => x.SalePlatform.Id == order.Platform.Id)
-              .Data.Add(order.Revenue);
+          List<int> weeksOfMonth = ordersByWeek.Select(x => x.Week).Distinct().ToList();
 
-            if (revenueBarLineChart.Labels.Any(x => x == order.Key.ToString("dd/MM")) == false)
-            {
-              revenueBarLineChart.Labels.Add(order.Key.ToString("dd/MM"));
-            }
+          for (int i = 0; i < weeksOfMonth.Count; i++)
+          {
+            revenueBarLineChart.DataSets.ForEach(x => x.Data.Add(0));
+
+            revenueBarLineChart.DataSets.ForEach(x =>
+              x.Data[i] = ordersByWeek
+                .Where(y => y.Week == weeksOfMonth[i] && y.Platform.Id == x.SalePlatform.Id).Select(x => x.Revenue).FirstOrDefault()
+            );
           }
+
+          revenueBarLineChart.Labels.AddRange(ordersByWeek.Select(x => $"Semana {x.Key:dd/MM}").Distinct());
 
         }
         else
@@ -333,17 +340,19 @@ namespace Seamstress.Application
             )
             .OrderBy(x => x.Key);
 
-          foreach (var order in ordersByMonth)
-          {
-            revenueBarLineChart.DataSets.First(x => x.SalePlatform.Id == order.Platform.Id)
-              .Data.Add(order.Revenue);
+          List<int> monthsOfYear = ordersByMonth.Select(x => x.Month).Distinct().ToList();
 
-            if (revenueBarLineChart.Labels.Any(x => x == order.Key.ToString("MMMM")) == false)
-            {
-              revenueBarLineChart.Labels.Add(order.Key.ToString("MMMM"));
-            }
+          for (int i = 0; i < monthsOfYear.Count; i++)
+          {
+            revenueBarLineChart.DataSets.ForEach(x => x.Data.Add(0));
+
+            revenueBarLineChart.DataSets.ForEach(x =>
+              x.Data[i] = ordersByMonth
+                .Where(y => y.Month == monthsOfYear[i] && y.Platform.Id == x.SalePlatform.Id).Select(x => x.Revenue).FirstOrDefault()
+            );
           }
 
+          revenueBarLineChart.Labels.AddRange(ordersByMonth.Select(x => x.Key.ToString("MMMM")).Distinct());
         }
 
         revenueBarLineChart.DataSets.Add(new()
