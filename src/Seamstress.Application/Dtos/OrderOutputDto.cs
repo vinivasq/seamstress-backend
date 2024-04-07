@@ -1,3 +1,4 @@
+using Seamstress.Domain;
 using Seamstress.Domain.Enum;
 
 namespace Seamstress.Application.Dtos
@@ -12,6 +13,7 @@ namespace Seamstress.Application.Dtos
     public DateTime Deadline { get; set; }
     public decimal Total { get; set; }
     public Step Step { get; set; }
+    public SalePlatform SalePlatform { get; set; } = null!;
     public CustomerOutputDto Customer { get; set; } = null!;
     public IEnumerable<ItemOrderOutputDto> ItemOrders { get; set; } = null!;
   }

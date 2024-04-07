@@ -41,6 +41,10 @@ namespace Seamstress.Application.Dtos
     [Required(ErrorMessage = "O Campo {0} não pode ficar vazio.")]
     public int ExecutorId { get; set; }
 
+    [Display(Name = "Canal de venda ")]
+    [Required(ErrorMessage = "O campo {0} não pode ficar vazio")]
+    public int SalePlatformId { get; set; }
+
     public IEnumerable<ItemOrderInputDto> ItemOrders { get; set; } = null!;
   }
 }
