@@ -215,6 +215,9 @@ namespace Seamstress.Application
           barLineChart.DataSets.First(x => x.SalePlatform.Id == 0).Data.Add(total);
         }
 
+        if (barLineChart.DataSets.Any(x => x.SalePlatform.Id == 99))
+          barLineChart.DataSets.Remove(barLineChart.DataSets.Where(x => x.SalePlatform.Id == 99).First());
+
         return this._mapper.Map<BarLineChartDto>(barLineChart);
       }
       catch (Exception ex)
@@ -366,6 +369,9 @@ namespace Seamstress.Application
 
           revenueBarLineChart.DataSets.First(x => x.SalePlatform.Id == 0).Data.Add(total);
         }
+
+        if (revenueBarLineChart.DataSets.Any(x => x.SalePlatform.Id == 99))
+          revenueBarLineChart.DataSets.Remove(revenueBarLineChart.DataSets.Where(x => x.SalePlatform.Id == 99).First());
 
         return this._mapper.Map<RevenueBarLineChartDto>(revenueBarLineChart);
       }
