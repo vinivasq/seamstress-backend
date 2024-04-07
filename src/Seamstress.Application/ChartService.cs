@@ -12,11 +12,13 @@ namespace Seamstress.Application
   {
     private readonly IChartPersistence _chartPersistence;
     private readonly IMapper _mapper;
+    public CultureInfo PTBRCulture { get; set; }
 
     public ChartService(IChartPersistence chartPersistence, IMapper mapper)
     {
       this._chartPersistence = chartPersistence;
       this._mapper = mapper;
+      this.PTBRCulture = new("pt-BR");
     }
     public async Task<DoughnutChart> GetRegionDoughnutChartAsync(DateOnly periodBegin, DateOnly periodEnd)
     {
@@ -112,7 +114,7 @@ namespace Seamstress.Application
               )
             .OrderBy(x => x.Key);
 
-          var daysOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.DayNames;
+          var daysOfWeek = PTBRCulture.DateTimeFormat.DayNames;
 
           barLineChart.Labels.AddRange(daysOfWeek);
 
@@ -133,7 +135,7 @@ namespace Seamstress.Application
         {
 
           var ordersByWeek = orders.GroupBy(order =>
-            CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+            PTBRCulture.Calendar.GetWeekOfYear(
                 order.OrderedAt, CalendarWeekRule.FirstDay, DayOfWeek.Sunday)
             )
             .SelectMany(group =>
@@ -166,7 +168,7 @@ namespace Seamstress.Application
         {
 
           var ordersByMonth = orders.GroupBy(order =>
-            CultureInfo.CurrentCulture.Calendar.GetMonth(order.OrderedAt)
+            PTBRCulture.Calendar.GetMonth(order.OrderedAt)
             )
             .SelectMany(group =>
               group.GroupBy(order => order.SalePlatformId)
@@ -271,7 +273,7 @@ namespace Seamstress.Application
               )
             .OrderBy(x => x.Key);
 
-          var daysOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.DayNames;
+          var daysOfWeek = PTBRCulture.DateTimeFormat.DayNames;
 
           revenueBarLineChart.Labels.AddRange(daysOfWeek);
 
@@ -292,7 +294,7 @@ namespace Seamstress.Application
         {
 
           var ordersByWeek = orders.GroupBy(order =>
-            CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+            PTBRCulture.Calendar.GetWeekOfYear(
                 order.OrderedAt, CalendarWeekRule.FirstDay, DayOfWeek.Sunday)
             )
             .SelectMany(group =>
@@ -326,7 +328,7 @@ namespace Seamstress.Application
         {
 
           var ordersByMonth = orders.GroupBy(order =>
-            CultureInfo.CurrentCulture.Calendar.GetMonth(order.OrderedAt)
+            PTBRCulture.Calendar.GetMonth(order.OrderedAt)
             )
             .SelectMany(group =>
               group.GroupBy(order => order.SalePlatformId)

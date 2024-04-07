@@ -16,6 +16,7 @@ namespace Seamstress.Persistence
     }
     public async Task<Statistic[]> GetStatisticsAsync()
     {
+      CultureInfo cultureInfo = new("pt-BR");
       decimal currentRevenue = await this._context.Orders.Where(x =>
         DateOnly.FromDateTime(x.OrderedAt) >= DateOnly.FromDateTime(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1))
       ).SumAsync(x => x.Total);
@@ -25,7 +26,7 @@ namespace Seamstress.Persistence
         new ()
         {
           Label = "Faturamento do mês atual",
-          Value = currentRevenue.ToString("C2", CultureInfo.CurrentCulture)
+          Value = currentRevenue.ToString("C2", cultureInfo)
         },
         new ()
         {
