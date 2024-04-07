@@ -32,7 +32,7 @@ namespace Seamstress.Persistence
           Label = "Melhor plataforma de venda",
           Value = Convert.ToString(
             await _context.Orders
-              .Where(o => o.SalePlatformId != null)
+              .Where(o => o.SalePlatformId != null && o.SalePlatformId != 99)
               .Include(x => x.SalePlatform)
               .GroupBy(o => o.SalePlatformId)
               .Select(group => new

@@ -15,7 +15,7 @@ namespace Seamstress.Persistence
     }
     public async Task<SalePlatform[]> GetSalePlatformsAsync()
     {
-      IQueryable<SalePlatform> query = this._context.SalePlatforms;
+      IQueryable<SalePlatform> query = this._context.SalePlatforms.Where(platform => platform.Id != 99);
 
       return await query.AsNoTracking().ToArrayAsync();
     }
