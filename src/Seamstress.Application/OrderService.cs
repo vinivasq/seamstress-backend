@@ -42,7 +42,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id);
+          Order orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id)
+            ?? throw new Exception("Não foi possível encontrar o pedido após cadastro");
 
           return _mapper.Map<OrderOutputDto>(orderResponse);
         }
@@ -74,7 +75,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id);
+          Order orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id)
+          ?? throw new Exception("Não foi possível encontrar o pedido após atualização");
 
           return _mapper.Map<OrderOutputDto>(orderResponse);
         }
@@ -98,7 +100,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id);
+          Order orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id)
+          ?? throw new Exception("Não foi possível encontrar o pedido após atualização");
 
           return _mapper.Map<OrderOutputDto>(orderResponse);
         }
@@ -194,8 +197,9 @@ namespace Seamstress.Application
     {
       try
       {
-        var order = await _orderPersistence.GetOrderByIdAsync(id);
-        var orderDto = _mapper.Map<OrderOutputDto>(order);
+        Order order = await _orderPersistence.GetOrderByIdAsync(id)
+          ?? throw new Exception("Não foi possível encontrar o pedido");
+        OrderOutputDto orderDto = _mapper.Map<OrderOutputDto>(order);
 
         orderDto.Executor = _mapper.Map<UserOutputDto>(await _userPersistence.GetUserByIdAsync(order.ExecutorId));
         orderDto.Executor.Name = $"{orderDto.Executor.FirstName} {orderDto.Executor.LastName}";
@@ -212,7 +216,8 @@ namespace Seamstress.Application
     {
       foreach (var itemOrder in model.ItemOrders)
       {
-        var itemResponse = await _itemPersistence.GetItemByIdAsync(itemOrder.ItemId);
+        Item itemResponse = await _itemPersistence.GetItemByIdAsync(itemOrder.ItemId)
+          ?? throw new Exception("Não foi encontrado o item a ser validao");
 
         if (itemResponse.ItemColors.FirstOrDefault(x => x.ColorId == itemOrder.ColorId) == null) throw new Exception($"Cor inválida no item de id: {itemOrder.ItemId}"); ;
         if (itemResponse.ItemFabrics.FirstOrDefault(x => x.FabricId == itemOrder.FabricId) == null) throw new Exception($"Tecido inválido no item de id: {itemOrder.ItemId}");
