@@ -42,5 +42,20 @@ namespace Seamstress.Persistence
     {
       _context.UpdateRange(entityArray);
     }
+
+    public void BeginTransaction()
+    {
+      _context.Database.BeginTransaction();
+    }
+
+    public void CommitTransaction()
+    {
+      _context.Database.CommitTransaction();
+    }
+
+    public void RollbackTransaction()
+    {
+      _context.Database.RollbackTransaction();
+    }
   }
 }
