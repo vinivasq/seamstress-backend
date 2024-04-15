@@ -39,7 +39,8 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          var itemOrderResponse = await _itemOrderPersistence.GetItemOrderByIdAsync(itemOrder.Id);
+          var itemOrderResponse = await _itemOrderPersistence.GetItemOrderByIdAsync(itemOrder.Id)
+          ?? throw new Exception("Erro ao recuperar o item de pedido após o cadastro");
           return itemOrderResponse;
         }
 
@@ -113,11 +114,12 @@ namespace Seamstress.Application
     {
       try
       {
-        var item = await _itemPersistence.GetItemByIdAsync(model.ItemId);
+        var item = await _itemPersistence.GetItemByIdAsync(model.ItemId)
+          ?? throw new Exception("Não foi encontrado o item a ser validao");
 
         if (item.ItemColors.FirstOrDefault(x => x.ColorId == model.ColorId) == null) throw new Exception("Cor inválida");
         if (item.ItemFabrics.FirstOrDefault(x => x.FabricId == model.FabricId) == null) throw new Exception("Tecido inválido");
-        if (item.ItemSizes.FirstOrDefault(x => x.Id == model.SizeId) == null) throw new Exception("Tamanho inválido");
+        if (item.ItemSizes.FirstOrDefault(x => x.SizeId == model.SizeId) == null) throw new Exception("Tamanho inválido");
       }
       catch (Exception ex)
       {
