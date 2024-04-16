@@ -8,6 +8,6 @@ namespace Seamstress.Persistence.Contracts
     Task<PageList<Order>> GetOrdersAsync(OrderParams orderParams);
     Task<Order[]> GetPendingOrdersAsync();
     Task<Order[]> GetPendingOrdersByExecutor(int userId);
-    Task<Order> GetOrderByIdAsync(int orderId);
+    Task<Order?> GetOrderByIdAsync(int orderId);
   }
 }

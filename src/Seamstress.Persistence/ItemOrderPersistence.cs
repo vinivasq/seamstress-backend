@@ -24,7 +24,7 @@ namespace Seamstress.Persistence
       return query.AsNoTracking().ToArrayAsync();
     }
 
-    public Task<ItemOrder> GetItemOrderByIdAsync(int id)
+    public Task<ItemOrder?> GetItemOrderByIdAsync(int id)
     {
       IQueryable<ItemOrder> query = _context.ItemOrder.Where(io => io.Id == id)
                                     .Include(io => io.Color)
@@ -32,7 +32,7 @@ namespace Seamstress.Persistence
                                     .Include(io => io.Size)
                                     .Include(io => io.Item);
 
-      return query.AsNoTracking().FirstAsync();
+      return query.AsNoTracking().FirstOrDefaultAsync();
     }
   }
 }

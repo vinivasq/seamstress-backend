@@ -68,6 +68,23 @@ namespace Seamstress.API.Controllers
       }
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(int id, ItemOrderInputDto model)
+    {
+      try
+      {
+        var itemOrder = await _itemOrderService.UpdateItemOrder(id, model);
+        if (itemOrder == null) return BadRequest("Não foi possível atualizar o item de pedido");
+
+        return Ok(itemOrder);
+      }
+      catch (Exception ex)
+      {
+
+        return StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o item de pedido. Erro: {ex.Message}");
+      }
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

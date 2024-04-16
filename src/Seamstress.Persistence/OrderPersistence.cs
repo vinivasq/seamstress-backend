@@ -42,7 +42,7 @@ namespace Seamstress.Persistence
       return await PageList<Order>.CreateAsync(query, orderParams.PageNumber, orderParams.PageSize);
     }
 
-    public async Task<Order> GetOrderByIdAsync(int orderId)
+    public async Task<Order?> GetOrderByIdAsync(int orderId)
     {
       IQueryable<Order> query = _context.Orders;
 
@@ -54,7 +54,7 @@ namespace Seamstress.Persistence
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item!.Set);
       query = query.Where(order => order.Id == orderId);
 
-      return await query.AsNoTracking().FirstAsync();
+      return await query.AsNoTracking().FirstOrDefaultAsync();
     }
 
     public async Task<Order[]> GetPendingOrdersAsync()
