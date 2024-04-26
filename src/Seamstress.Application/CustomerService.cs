@@ -31,6 +31,7 @@ namespace Seamstress.Application
         if (await _customerPersistence.GetCustomerByPKAsync(model.CPF_CNPJ) != null) throw new Exception("Cliente com CPF/CNPJ já existente");
 
         var customer = _mapper.Map<Customer>(model);
+        customer.Name = customer.Name.Trim();
         _generalPersistence.Add<Customer>(customer);
 
         if (await _generalPersistence.SaveChangesAsync())
@@ -68,6 +69,8 @@ namespace Seamstress.Application
             _generalPersistence.Update<Sizings>(model.Sizings);
           }
         }
+
+        model.Name = model.Name.Trim();
 
         _mapper.Map(model, customer);
         _generalPersistence.Update<Customer>(customer);
