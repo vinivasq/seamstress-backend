@@ -64,6 +64,23 @@ namespace Seamstress.API
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
       });
 
+      services.AddCors(options =>
+      {
+        options.AddPolicy("AllowSeamstressClient", builder =>
+        {
+          builder.WithOrigins("https://www.seamstress.com.br")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+
+          if (Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development")
+          {
+            builder.WithOrigins("http://localhost:8293")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+          }
+        });
+      });
+
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
       services.AddScoped<IGeneralPersistence, GeneralPersistence>();
       services.AddScoped<IOrderService, OrderService>();
@@ -98,7 +115,6 @@ namespace Seamstress.API
       services.AddScoped<IStatisticsPersistence, StatisticsPersistence>();
       services.AddScoped<IStatisticsService, StatisticsService>();
 
-      services.AddCors();
       services.AddSwaggerGen(c =>
       {
         c.CustomSchemaIds(type => type.ToString());
@@ -148,7 +164,7 @@ namespace Seamstress.API
 
       app.UseRouting();
 
-      app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+      app.UseCors("AllowSeamstressClient");
 
       app.UseAuthentication();
       app.UseAuthorization();
