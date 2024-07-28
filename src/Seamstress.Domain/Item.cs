@@ -6,6 +6,7 @@ namespace Seamstress.Domain
     public string Name { get; set; } = null!;
     public int? SetId { get; set; }
     public Set? Set { get; set; }
+    public SetItem? SetItem { get; set; }
     public IEnumerable<ItemColor> ItemColors { get; set; } = null!;
     public IEnumerable<ItemFabric> ItemFabrics { get; set; } = null!;
     public IEnumerable<ItemSize> ItemSizes { get; set; } = null!;

@@ -26,6 +26,7 @@ namespace Seamstress.Persistence.Context
     public DbSet<ItemSize> ItemsSizes { get; set; } = null!;
     public DbSet<ItemOrder> ItemOrder { get; set; } = null!;
     public DbSet<Set> Sets { get; set; } = null!;
+    public DbSet<SetItem> SetItems { get; set; } = null!;
     public DbSet<ItemSizeMeasurement> ItemSizeMeasurements { get; set; } = null!;
     public DbSet<SalePlatform> SalePlatforms { get; set; } = null!;
 
@@ -54,6 +55,7 @@ namespace Seamstress.Persistence.Context
       modelBuilder.Entity<OrderUser>().HasKey(OU => new { OU.OrderId, OU.UserId });
       modelBuilder.Entity<ItemColor>().HasKey(IC => new { IC.ItemId, IC.ColorId });
       modelBuilder.Entity<ItemFabric>().HasKey(IF => new { IF.ItemId, IF.FabricId });
+      modelBuilder.Entity<SetItem>().HasKey(SI => new { SI.ItemId, SI.SetId });
       modelBuilder.Entity<ItemSize>().HasMany(IS => IS.Measurements)
                                      .WithOne(ISM => ISM.ItemSize)
                                      .HasForeignKey(ISM => ISM.ItemSizeId)
