@@ -31,7 +31,7 @@ namespace Seamstress.Persistence
       query = query.Include(itemSize => itemSize.Measurements);
       query = query.Where(itemSize => itemSize.ItemId == itemId && itemSize.SizeId == sizeId);
 
-      return query.AsNoTracking().FirstOrDefault();
+      return query.AsNoTracking().FirstOrDefault() ?? throw new Exception("Tamanho de modelo não encontrado");
     }
     public async Task<ItemSize> GetItemSizeByIdAsync(int id)
     {
