@@ -22,7 +22,7 @@ namespace Seamstress.Persistence
       query = query.Include(item => item.ItemFabrics).ThenInclude(IF => IF.Fabric);
       query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Size);
       query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Measurements);
-      query = query.Include(item => item.Set);
+      query = query.Include(item => item.SetItem).ThenInclude(setItem => setItem!.Set);
       query = query.OrderBy(item => item.Id);
 
       return await query.AsNoTracking().ToArrayAsync();
@@ -35,7 +35,7 @@ namespace Seamstress.Persistence
       query = query.Include(item => item.ItemFabrics).ThenInclude(IF => IF.Fabric);
       query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Size);
       query = query.Include(item => item.ItemSizes).ThenInclude(IS => IS.Measurements);
-      query = query.Include(item => item.Set);
+      query = query.Include(item => item.SetItem).ThenInclude(setItem => setItem!.Set);
       query = query.Where(x => x.Id == id);
 
       return await query.AsNoTracking().FirstOrDefaultAsync();

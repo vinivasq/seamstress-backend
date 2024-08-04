@@ -29,7 +29,7 @@ namespace Seamstress.Persistence
 
     public async Task<bool> CheckFKAsync(int id)
     {
-      return await this._context.Items.AnyAsync(x => x.SetId == id);
+      return await this._context.Items.AnyAsync(x => x.SetItem != null && x.SetItem.SetId == id);
     }
   }
 }

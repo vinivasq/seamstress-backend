@@ -23,7 +23,8 @@ namespace Seamstress.Persistence
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item!.Set);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item)
+        .ThenInclude(item => item!.SetItem).ThenInclude(setItem => setItem!.Set);
 
       query = query.Where(order => order.OrderedAt.Date >= orderParams.OrderedAtStart.Date && order.OrderedAt.Date <= orderParams.OrderedAtEnd.Date);
 
@@ -51,7 +52,8 @@ namespace Seamstress.Persistence
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item!.Set);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item)
+        .ThenInclude(item => item!.SetItem).ThenInclude(setItem => setItem!.Set);
       query = query.Where(order => order.Id == orderId);
 
       return await query.AsNoTracking().FirstOrDefaultAsync();
@@ -65,7 +67,8 @@ namespace Seamstress.Persistence
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item!.Set);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item)
+        .ThenInclude(item => item!).ThenInclude(setItem => setItem!.Set);
       query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
       query = query.OrderBy(order => order.Deadline);
 
@@ -80,7 +83,8 @@ namespace Seamstress.Persistence
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item).ThenInclude(item => item!.Set);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item)
+        .ThenInclude(item => item!.SetItem).ThenInclude(setItem => setItem!.Set);
       query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
       query = query.OrderBy(order => order.Deadline);
 
