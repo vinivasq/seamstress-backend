@@ -4,7 +4,7 @@ using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Domain.Enum;
 using Seamstress.Persistence.Contracts;
-using Seamstress.Persistence.Helpers;
+using Seamstress.Persistence.Models;
 
 namespace Seamstress.Application
 {

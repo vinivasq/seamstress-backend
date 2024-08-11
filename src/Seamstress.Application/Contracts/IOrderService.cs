@@ -1,5 +1,5 @@
 using Seamstress.Application.Dtos;
-using Seamstress.Persistence.Helpers;
+using Seamstress.Persistence.Models;
 
 namespace Seamstress.Application.Contracts
 {

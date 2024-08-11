@@ -2,10 +2,10 @@ using Seamstress.Domain;
 using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Seamstress.Persistence.Helpers;
 using System.Text;
 using System.Linq.Expressions;
 using static Seamstress.Persistence.Helpers.CombineEpressions;
+using Seamstress.Persistence.Models;
 
 
 namespace Seamstress.Persistence

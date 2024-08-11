@@ -1,5 +1,5 @@
 using Seamstress.Domain;
-using Seamstress.Persistence.Helpers;
+using Seamstress.Persistence.Models;
 
 namespace Seamstress.Persistence.Contracts
 {
