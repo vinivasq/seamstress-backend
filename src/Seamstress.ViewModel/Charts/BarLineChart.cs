@@ -1,6 +1,4 @@
-using Seamstress.Persistence.Models.ViewModels.Charts;
-
-namespace Seamstress.Persistence.Models.ViewModels
+namespace Seamstress.ViewModel
 {
   public class BarLineChart
   {

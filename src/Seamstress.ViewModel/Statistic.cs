@@ -1,4 +1,4 @@
-namespace Seamstress.Persistence.Models.ViewModels
+namespace Seamstress.ViewModel
 {
   public class Statistic
   {

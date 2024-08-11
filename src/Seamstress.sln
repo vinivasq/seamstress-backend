@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -13,6 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seamstress.Persistence", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seamstress.DTO", "Seamstress.DTO\Seamstress.DTO.csproj", "{CF5F3AC6-BB2D-47E0-96C7-D24B59FD5080}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seamstress.ViewModel", "Seamstress.ViewModel\Seamstress.ViewModel.csproj", "{B16BB0A5-4EE2-47DD-AFB7-F86FE216881A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,5 +44,9 @@ Global
 		{CF5F3AC6-BB2D-47E0-96C7-D24B59FD5080}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF5F3AC6-BB2D-47E0-96C7-D24B59FD5080}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF5F3AC6-BB2D-47E0-96C7-D24B59FD5080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B16BB0A5-4EE2-47DD-AFB7-F86FE216881A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B16BB0A5-4EE2-47DD-AFB7-F86FE216881A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B16BB0A5-4EE2-47DD-AFB7-F86FE216881A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B16BB0A5-4EE2-47DD-AFB7-F86FE216881A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

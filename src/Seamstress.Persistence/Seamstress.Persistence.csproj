@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Seamstress.Domain\Seamstress.Domain.csproj" />
+    <ProjectReference Include="..\Seamstress.ViewModel\Seamstress.ViewModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

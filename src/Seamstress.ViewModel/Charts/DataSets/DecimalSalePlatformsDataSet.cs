@@ -1,6 +1,6 @@
 using Seamstress.Domain;
 
-namespace Seamstress.Persistence.Models.ViewModels.Charts
+namespace Seamstress.ViewModel
 {
   public class DecimalSalePlatformsDataSet
   {
