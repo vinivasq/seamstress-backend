@@ -1,4 +1,4 @@
-namespace Seamstress.Application.Dtos
+namespace Seamstress.DTO
 {
   public class UserUpdateDto
   {

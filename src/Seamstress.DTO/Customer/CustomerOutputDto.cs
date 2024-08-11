@@ -1,6 +1,6 @@
 using Seamstress.Domain;
 
-namespace Seamstress.Application.Dtos
+namespace Seamstress.DTO
 {
   public class CustomerOutputDto
   {

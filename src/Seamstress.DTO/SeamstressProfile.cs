@@ -1,9 +1,8 @@
 using AutoMapper;
-using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Domain.Identity;
-using Seamstress.Persistence.Models.ViewModels;
-using Seamstress.Persistence.Models.ViewModels.Charts;
+using Seamstress.DTO;
+using Seamstress.ViewModel;
 
 namespace Seamstress.Application.Helpers
 {
@@ -22,14 +21,9 @@ namespace Seamstress.Application.Helpers
       CreateMap<OrderInputDto, Order>();
       CreateMap<Order, OrderOutputDto>();
       CreateMap<ItemOrderInputDto, ItemOrder>();
-      CreateMap<ItemOrder, ItemOrderOutputDto>()
-        .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
-        .ForMember(dest => dest.Fabric, opt => opt.MapFrom(src => src.Fabric))
-        .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size))
-        .ForMember(dest => dest.ItemSize, opt => opt.Ignore())
-        .AfterMap<MapItemSizeAction>();
 
-
+      CreateMap<Set, SetOutputDTO>();
+      CreateMap<SetItem, SetItemOutputSetDTO>();
       CreateMap<ItemInputDto, Item>();
       CreateMap<Item, ItemOutputDto>()
         .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.ItemColors.Select(ic => ic.Color)))

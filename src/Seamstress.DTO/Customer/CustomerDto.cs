@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Seamstress.Domain;
 
-namespace Seamstress.Application.Dtos
+namespace Seamstress.DTO
 {
   public class CustomerDto
   {

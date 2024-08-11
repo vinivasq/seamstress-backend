@@ -1,7 +1,7 @@
 using Seamstress.Domain;
 using Seamstress.Domain.Enum;
 
-namespace Seamstress.Application.Dtos
+namespace Seamstress.DTO
 {
   public class OrderOutputDto
   {
