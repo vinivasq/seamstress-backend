@@ -1,5 +1,5 @@
-using Seamstress.Application.Dtos;
 using Seamstress.Domain;
+using Seamstress.DTO;
 
 namespace Seamstress.Application.Contracts
 {

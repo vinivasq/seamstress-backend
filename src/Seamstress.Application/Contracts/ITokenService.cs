@@ -1,4 +1,4 @@
-using Seamstress.Application.Dtos;
+using Seamstress.DTO;
 
 namespace Seamstress.Application.Contracts
 {

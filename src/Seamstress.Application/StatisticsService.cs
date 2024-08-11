@@ -1,6 +1,6 @@
 using Seamstress.Application.Contracts;
 using Seamstress.Persistence.Contracts;
-using Seamstress.Persistence.Models.ViewModels;
+using Seamstress.ViewModel;
 
 namespace Seamstress.Application
 {

@@ -1,4 +1,4 @@
-using Seamstress.Application.Dtos;
+using Seamstress.DTO;
 using Seamstress.Persistence.Models;
 
 namespace Seamstress.Application.Contracts

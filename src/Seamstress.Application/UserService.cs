@@ -2,8 +2,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Seamstress.Application.Contracts;
-using Seamstress.Application.Dtos;
 using Seamstress.Domain.Identity;
+using Seamstress.DTO;
 using Seamstress.Persistence.Contracts;
 
 namespace Seamstress.Application
