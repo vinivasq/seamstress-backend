@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Seamstress.Application.Dtos;
+using Seamstress.DTO;
 
 namespace Seamstress.Application.Contracts
 {

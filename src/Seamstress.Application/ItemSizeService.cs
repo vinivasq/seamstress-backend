@@ -1,7 +1,7 @@
 using AutoMapper;
 using Seamstress.Application.Contracts;
-using Seamstress.Application.Dtos;
 using Seamstress.Domain;
+using Seamstress.DTO;
 using Seamstress.Persistence.Contracts;
 
 namespace Seamstress.Application

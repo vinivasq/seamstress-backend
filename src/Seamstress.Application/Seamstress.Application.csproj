@@ -9,6 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Seamstress.Domain\Seamstress.Domain.csproj" />
     <ProjectReference Include="..\Seamstress.Persistence\Seamstress.Persistence.csproj" />
+    <ProjectReference Include="..\Seamstress.DTO\Seamstress.DTO.csproj" />
+    <ProjectReference Include="..\Seamstress.ViewModel\Seamstress.ViewModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

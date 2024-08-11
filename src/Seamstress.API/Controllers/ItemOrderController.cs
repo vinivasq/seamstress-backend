@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
-using Seamstress.Application.Dtos;
+using Seamstress.DTO;
 
 namespace Seamstress.API.Controllers
 {

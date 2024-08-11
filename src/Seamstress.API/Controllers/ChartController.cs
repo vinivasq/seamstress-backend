@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.Application.Contracts;
-using Seamstress.Application.Dtos;
-using Seamstress.Persistence.Models.ViewModels;
+using Seamstress.DTO;
+using Seamstress.ViewModel;
 
 namespace Seamstress.API.Controllers
 {

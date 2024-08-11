@@ -25,6 +25,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Seamstress.Application\Seamstress.Application.csproj" />
+    <ProjectReference Include="..\Seamstress.ViewModel\Seamstress.ViewModel.csproj" />
+    <ProjectReference Include="..\Seamstress.DTO\Seamstress.DTO.csproj" />
   </ItemGroup>
 
 </Project>

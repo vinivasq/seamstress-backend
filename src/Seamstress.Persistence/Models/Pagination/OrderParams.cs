@@ -1,4 +1,4 @@
-namespace Seamstress.Persistence.Helpers
+namespace Seamstress.Persistence.Models
 {
   public class OrderParams : PageParams
   {

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Seamstress.Persistence.Helpers
+namespace Seamstress.Persistence.Models
 {
   public class PageList<T> : List<T>
   {

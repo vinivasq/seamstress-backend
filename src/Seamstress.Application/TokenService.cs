@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Seamstress.Application.Contracts;
-using Seamstress.Application.Dtos;
 using Seamstress.Domain.Identity;
+using Seamstress.DTO;
 
 namespace Seamstress.Application
 {

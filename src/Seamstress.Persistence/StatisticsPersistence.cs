@@ -2,7 +2,7 @@ using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
-using Seamstress.Persistence.Models.ViewModels;
+using Seamstress.ViewModel;
 
 namespace Seamstress.Persistence
 {

@@ -1,4 +1,4 @@
-using Seamstress.Persistence.Models.ViewModels;
+using Seamstress.ViewModel;
 
 namespace Seamstress.Persistence.Contracts
 {
