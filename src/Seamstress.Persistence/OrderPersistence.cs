@@ -3,18 +3,24 @@ using Seamstress.Persistence.Context;
 using Seamstress.Persistence.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Seamstress.Persistence.Models;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Seamstress.DTO;
 
 namespace Seamstress.Persistence
 {
   public class OrderPersistence : IOrderPersistence
   {
     private readonly SeamstressContext _context;
-    public OrderPersistence(SeamstressContext context)
+    private readonly IMapper _mapper;
+
+    public OrderPersistence(SeamstressContext context, IMapper mapper)
     {
       this._context = context;
+      this._mapper = mapper;
     }
 
-    public async Task<PageList<Order>> GetOrdersAsync(OrderParams orderParams)
+    public async Task<PageList<OrderOutputDto>> GetOrdersAsync(OrderParams orderParams)
     {
       IQueryable<Order> query = _context.Orders;
 
@@ -40,14 +46,27 @@ namespace Seamstress.Persistence
 
       query = query.OrderBy(order => order.OrderedAt);
 
-      return await PageList<Order>.CreateAsync(query, orderParams.PageNumber, orderParams.PageSize);
+      IQueryable<OrderOutputDto> queryDto = query.ProjectTo<OrderOutputDto>(_mapper.ConfigurationProvider);
+
+      return await PageList<OrderOutputDto>.CreateAsync(queryDto, orderParams.PageNumber, orderParams.PageSize);
     }
 
     public async Task<Order?> GetOrderByIdAsync(int orderId)
     {
       IQueryable<Order> query = _context.Orders;
 
+      query = query.Include(order => order.ItemOrders);
+      query = query.Where(order => order.Id == orderId);
+
+      return await query.AsNoTracking().FirstOrDefaultAsync();
+    }
+
+    public async Task<OrderOutputDto?> GetOrderOutputDtoByIdAsync(int orderId)
+    {
+      IQueryable<Order> query = _context.Orders;
+
       query = query.Include(order => order.SalePlatform);
+      query = query.Include(order => order.Executor);
       query = query.Include(order => order.Customer).ThenInclude(customer => customer!.Sizings);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
       query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
@@ -56,26 +75,10 @@ namespace Seamstress.Persistence
         .ThenInclude(item => item!.SetItem).ThenInclude(setItem => setItem!.Set);
       query = query.Where(order => order.Id == orderId);
 
-      return await query.AsNoTracking().FirstOrDefaultAsync();
+      return await query.AsNoTracking().ProjectTo<OrderOutputDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
     }
 
-    public async Task<Order[]> GetPendingOrdersAsync()
-    {
-      IQueryable<Order> query = _context.Orders;
-
-      query = query.Include(order => order.Customer).ThenInclude(customer => customer!.Sizings);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
-      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item)
-        .ThenInclude(item => item!).ThenInclude(setItem => setItem!.Set);
-      query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
-      query = query.OrderBy(order => order.Deadline);
-
-      return await query.AsNoTracking().ToArrayAsync();
-    }
-
-    public async Task<Order[]> GetPendingOrdersByExecutor(int userId)
+    public async Task<OrderOutputDto[]> GetPendingOrdersAsync()
     {
       IQueryable<Order> query = _context.Orders;
 
@@ -88,7 +91,24 @@ namespace Seamstress.Persistence
       query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
       query = query.OrderBy(order => order.Deadline);
 
-      return await query.Where(order => order.ExecutorId == userId).AsNoTracking().ToArrayAsync();
+      return await query.AsNoTracking().ProjectTo<OrderOutputDto>(_mapper.ConfigurationProvider).ToArrayAsync();
+    }
+
+    public async Task<OrderOutputDto[]> GetPendingOrdersByExecutor(int userId)
+    {
+      IQueryable<Order> query = _context.Orders;
+
+      query = query.Include(order => order.Customer).ThenInclude(customer => customer!.Sizings);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Color);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Fabric);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Size);
+      query = query.Include(order => order.ItemOrders).ThenInclude(itemOrder => itemOrder.Item)
+        .ThenInclude(item => item!.SetItem).ThenInclude(setItem => setItem!.Set);
+      query = query.Where(order => order.Step != Domain.Enum.Step.Entregue);
+      query = query.Where(order => order.ExecutorId == userId);
+      query = query.OrderBy(order => order.Deadline);
+
+      return await query.AsNoTracking().ProjectTo<OrderOutputDto>(_mapper.ConfigurationProvider).ToArrayAsync();
     }
   }
 }

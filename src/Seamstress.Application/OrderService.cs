@@ -13,19 +13,16 @@ namespace Seamstress.Application
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IOrderPersistence _orderPersistence;
     private readonly IItemPersistence _itemPersistence;
-    private readonly IUserPersistence _userPersistence;
     private readonly IMapper _mapper;
 
     public OrderService(IGeneralPersistence generalPersistence,
                         IOrderPersistence orderPersistence,
                         IItemPersistence itemPersistence,
-                        IUserPersistence userPersistence,
                         IMapper mapper
                         )
     {
       this._orderPersistence = orderPersistence;
       this._itemPersistence = itemPersistence;
-      this._userPersistence = userPersistence;
       this._generalPersistence = generalPersistence;
       this._mapper = mapper;
     }
@@ -36,16 +33,16 @@ namespace Seamstress.Application
       {
         await ValidateItemOrder(model);
 
-        var order = _mapper.Map<Order>(model);
+        Order order = _mapper.Map<Order>(model);
 
         _generalPersistence.Add<Order>(order);
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          Order orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id)
+          OrderOutputDto orderResponse = await _orderPersistence.GetOrderOutputDtoByIdAsync(order.Id)
             ?? throw new Exception("Não foi possível encontrar o pedido após cadastro");
 
-          return _mapper.Map<OrderOutputDto>(orderResponse);
+          return orderResponse;
         }
 
         throw new Exception("Não foi possível criar o Evento");
@@ -60,7 +57,7 @@ namespace Seamstress.Application
     {
       try
       {
-        var order = await _orderPersistence.GetOrderByIdAsync(id) ?? throw new Exception("Não foi possível encontrar o pedido");
+        Order order = await _orderPersistence.GetOrderByIdAsync(id) ?? throw new Exception("Não foi possível encontrar o pedido");
         await ValidateItemOrder(model);
         model.Id = order.Id;
 
@@ -75,10 +72,10 @@ namespace Seamstress.Application
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          Order orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id)
+          OrderOutputDto orderResponse = await _orderPersistence.GetOrderOutputDtoByIdAsync(order.Id)
           ?? throw new Exception("Não foi possível encontrar o pedido após atualização");
 
-          return _mapper.Map<OrderOutputDto>(orderResponse);
+          return orderResponse;
         }
 
         throw new Exception("Não foi possível alterar o pedido");
@@ -93,17 +90,17 @@ namespace Seamstress.Application
     {
       try
       {
-        var order = await _orderPersistence.GetOrderByIdAsync(id) ?? throw new Exception("Pedido não encontrado.");
+        Order order = await _orderPersistence.GetOrderByIdAsync(id) ?? throw new Exception("Pedido não encontrado.");
 
         order.Step = (Step)step;
         _generalPersistence.Update(order);
 
         if (await _generalPersistence.SaveChangesAsync())
         {
-          Order orderResponse = await _orderPersistence.GetOrderByIdAsync(order.Id)
+          OrderOutputDto orderResponse = await _orderPersistence.GetOrderOutputDtoByIdAsync(order.Id)
           ?? throw new Exception("Não foi possível encontrar o pedido após atualização");
 
-          return _mapper.Map<OrderOutputDto>(orderResponse);
+          return orderResponse;
         }
 
         throw new Exception("Não foi possível alterar a etapa");
@@ -118,8 +115,8 @@ namespace Seamstress.Application
     {
       try
       {
-        var order = await _orderPersistence.GetOrderByIdAsync(id);
-        if (order == null) throw new Exception("Pedido não encontrado.");
+        var order = await _orderPersistence.GetOrderByIdAsync(id)
+          ?? throw new Exception("Pedido não encontrado.");
 
         _generalPersistence.Delete<Order>(order);
 
@@ -130,13 +127,14 @@ namespace Seamstress.Application
         throw new Exception(ex.Message);
       }
     }
+
     public async Task<PageList<OrderOutputDto>> GetOrdersAsync(OrderParams orderParams)
     {
       try
       {
         if (orderParams.OrderedAtStart > orderParams.OrderedAtEnd) throw new Exception("Data de início não pode ser maior que a data final");
 
-        PageList<Order> orders = await _orderPersistence.GetOrdersAsync(orderParams);
+        PageList<OrderOutputDto> orders = await _orderPersistence.GetOrdersAsync(orderParams);
 
         PageList<OrderOutputDto> result = new()
         {
@@ -146,7 +144,7 @@ namespace Seamstress.Application
           TotalCount = orders.TotalCount
         };
 
-        result.AddRange(_mapper.Map<OrderOutputDto[]>(orders));
+        result.AddRange(orders);
 
         return result;
       }
@@ -157,16 +155,11 @@ namespace Seamstress.Application
       }
     }
 
-
     public async Task<OrderOutputDto[]> GetPendingOrdersAsync()
     {
       try
       {
-        var orders = await _orderPersistence.GetPendingOrdersAsync();
-
-        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
-
-        return ordersDto;
+        return await _orderPersistence.GetPendingOrdersAsync();
       }
       catch (Exception ex)
       {
@@ -175,16 +168,11 @@ namespace Seamstress.Application
       }
     }
 
-
     public async Task<OrderOutputDto[]> GetPendingOrdersByExecutorAsync(int userId)
     {
       try
       {
-        var orders = await _orderPersistence.GetPendingOrdersByExecutor(userId);
-
-        var ordersDto = _mapper.Map<OrderOutputDto[]>(orders);
-
-        return ordersDto;
+        return await _orderPersistence.GetPendingOrdersByExecutor(userId);
       }
       catch (Exception ex)
       {
@@ -197,12 +185,8 @@ namespace Seamstress.Application
     {
       try
       {
-        Order order = await _orderPersistence.GetOrderByIdAsync(id)
+        OrderOutputDto orderDto = await _orderPersistence.GetOrderOutputDtoByIdAsync(id)
           ?? throw new Exception("Não foi possível encontrar o pedido");
-        OrderOutputDto orderDto = _mapper.Map<OrderOutputDto>(order);
-
-        orderDto.Executor = _mapper.Map<UserOutputDto>(await _userPersistence.GetUserByIdAsync(order.ExecutorId));
-        orderDto.Executor.Name = $"{orderDto.Executor.FirstName} {orderDto.Executor.LastName}";
 
         return orderDto;
       }
