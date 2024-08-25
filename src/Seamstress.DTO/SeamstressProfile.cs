@@ -12,7 +12,8 @@ namespace Seamstress.Application.Helpers
     {
       CreateMap<User, UserLoginDto>().ReverseMap();
       CreateMap<User, UserUpdateDto>().ReverseMap();
-      CreateMap<User, UserOutputDto>().ReverseMap();
+      CreateMap<User, UserOutputDto>()
+        .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}")).ReverseMap();
       CreateMap<Customer, CustomerDto>().ReverseMap();
       CreateMap<ItemSize, ItemSizeDto>().ReverseMap();
       CreateMap<ItemSize, ItemSizeForMeasurementsDto>().ReverseMap();
