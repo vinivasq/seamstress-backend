@@ -11,12 +11,14 @@ namespace Seamstress.Application
   {
     private readonly IItemPersistence _itemPersistence;
     private readonly IItemSizePersistence _itemSizePersistence;
+    private readonly ISetPersistence _setPersistence;
     private readonly IGeneralPersistence _generalPersistence;
     private readonly IAzureBlobService _azureService;
     private readonly IMapper _mapper;
 
     public ItemService(IItemPersistence itemPersistence,
                         IItemSizePersistence itemSizePersistence,
+                        ISetPersistence setPersistence,
                         IAzureBlobService azureService,
                         IGeneralPersistence generalPersistence,
                         IMapper mapper)
@@ -26,6 +28,7 @@ namespace Seamstress.Application
       this._azureService = azureService;
       this._itemPersistence = itemPersistence;
       this._itemSizePersistence = itemSizePersistence;
+      this._setPersistence = setPersistence;
     }
 
 
@@ -33,7 +36,9 @@ namespace Seamstress.Application
     {
       try
       {
-        var item = _mapper.Map<Item>(model);
+        if (model.SetItem is not null && model.SetItem.IsPrimary) await ValidateSetItem(model.SetItem.SetId);
+
+        Item item = _mapper.Map<Item>(model);
 
         _generalPersistence.Add(item);
 
@@ -210,6 +215,22 @@ namespace Seamstress.Application
           ?? throw new Exception("Não foi possível encontrar o item a ser validado.");
 
         return await this._itemPersistence.CheckFKAsync(id);
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task ValidateSetItem(int setId)
+    {
+      try
+      {
+        Set set = await _setPersistence.GetSetByIdAsync(setId)
+          ?? throw new Exception("Não foi encontrado nenhum conjunto com este ID.");
+
+        if (set.SetItems.ToList().Exists(setItem => setItem.IsPrimary == true))
+          throw new Exception("Já exite um item principal para este conjunto.");
       }
       catch (Exception ex)
       {

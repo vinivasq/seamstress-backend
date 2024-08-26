@@ -23,6 +23,7 @@ namespace Seamstress.Persistence
     public async Task<Set?> GetSetByIdAsync(int id)
     {
       IQueryable<Set> query = _context.Sets.Where(set => set.Id == id);
+      query = query.Include(set => set.SetItems);
 
       return await query.AsNoTracking().FirstOrDefaultAsync();
     }
