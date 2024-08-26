@@ -6,7 +6,7 @@ namespace Seamstress.DTO
   {
     public int Id { get; set; }
     public string Name { get; set; } = null!;
-    public SetItemOutputSetDTO? SetItem { get; set; }
+    public SetItemOutputSetDto? SetItem { get; set; }
     public IEnumerable<Color> Colors { get; set; } = null!;
     public IEnumerable<Fabric> Fabrics { get; set; } = null!;
     public IEnumerable<ItemSizeDto> ItemSizes { get; set; } = null!;

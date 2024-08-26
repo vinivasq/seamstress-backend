@@ -23,8 +23,9 @@ namespace Seamstress.Application.Helpers
       CreateMap<Order, OrderOutputDto>();
       CreateMap<ItemOrderInputDto, ItemOrder>();
 
-      CreateMap<Set, SetOutputDTO>();
-      CreateMap<SetItem, SetItemOutputSetDTO>();
+      CreateMap<Set, SetOutputDto>();
+      CreateMap<SetItemInputDto, SetItem>();
+      CreateMap<SetItem, SetItemOutputSetDto>();
       CreateMap<ItemInputDto, Item>();
       CreateMap<Item, ItemOutputDto>()
         .ForMember(dest => dest.Colors, opt => opt.MapFrom(src => src.ItemColors.Select(ic => ic.Color)))
