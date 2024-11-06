@@ -23,11 +23,11 @@ namespace Seamstress.Persistence
 
       List<Statistic> statistics = new()
       {
-        new ()
-        {
-          Label = "Faturamento do mês atual",
-          Value = currentRevenue.ToString("C2", cultureInfo)
-        },
+        // new () Eliza pediu para remover visto que não refletia o faturamento real do atelie, já que muitas peças eram vendidas com valores diferentes do cadastrados no sistema
+        // {
+        //   Label = "Faturamento do mês atual",
+        //   Value = currentRevenue.ToString("C2", cultureInfo)
+        // },
         new ()
         {
           Label = "Melhor plataforma de venda",
