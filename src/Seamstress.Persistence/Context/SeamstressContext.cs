@@ -70,7 +70,7 @@ namespace Seamstress.Persistence.Context
             .HasDefaultValue(true);
 
       modelBuilder.Entity<Item>()
-            .Property(c => c.IsActive)
+            .Property(i => i.IsActive)
             .HasDefaultValue(true);
 
       modelBuilder.Entity<Color>()
@@ -78,15 +78,19 @@ namespace Seamstress.Persistence.Context
             .HasDefaultValue(true);
 
       modelBuilder.Entity<Fabric>()
-            .Property(c => c.IsActive)
+            .Property(f => f.IsActive)
             .HasDefaultValue(true);
 
       modelBuilder.Entity<Set>()
-            .Property(c => c.IsActive)
+            .Property(s => s.IsActive)
             .HasDefaultValue(true);
 
       modelBuilder.Entity<Size>()
-            .Property(c => c.IsActive)
+            .Property(s => s.IsActive)
+            .HasDefaultValue(true);
+
+      modelBuilder.Entity<User>()
+            .Property(u => u.IsActive)
             .HasDefaultValue(true);
     }
   }

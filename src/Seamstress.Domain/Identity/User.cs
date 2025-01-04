@@ -10,5 +10,6 @@ namespace Seamstress.Domain.Identity
     public Roles Role { get; set; }
     public IEnumerable<UserRole> UserRoles { get; set; } = null!;
     public string? ImageURL { get; set; }
+    public bool? IsActive { get; set; } = true;
   }
 }
