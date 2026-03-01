@@ -4,6 +4,7 @@ using Seamstress.Application.Dtos;
 using Seamstress.Domain;
 using Seamstress.Persistence.Contracts;
 using Seamstress.Persistence.Helpers;
+using Seamstress.Persistence.Parameters;
 
 namespace Seamstress.Application
 {
@@ -191,6 +192,19 @@ namespace Seamstress.Application
       catch (Exception ex)
       {
 
+        throw new Exception(ex.Message);
+      }
+    }
+
+    public async Task<List<CustomerExportDto>> GetCustomersForExportAsync(CustomerExportParams exportParams)
+    {
+      try
+      {
+        var customers = await _customerPersistence.GetCustomersForExportAsync(exportParams);
+        return _mapper.Map<List<CustomerExportDto>>(customers);
+      }
+      catch (Exception ex)
+      {
         throw new Exception(ex.Message);
       }
     }
