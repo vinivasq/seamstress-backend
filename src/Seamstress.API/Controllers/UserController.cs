@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
+using Seamstress.Domain.Enum;
 
 namespace Seamstress.API.Controllers
 {
@@ -123,6 +124,54 @@ namespace Seamstress.API.Controllers
       {
 
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o usuário. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+      try
+      {
+        var requestingUser = await _userService.GetUserByUserNameAsync(User.GetUserName());
+        if (requestingUser.Role != Roles.Admin.ToString()) return StatusCode(StatusCodes.Status403Forbidden, "Acesso negado.");
+
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível retornar os usuários. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> AdminUpdateUser(int id, AdminUserUpdateDto dto)
+    {
+      try
+      {
+        var requestingUser = await _userService.GetUserByUserNameAsync(User.GetUserName());
+        if (requestingUser.Role != Roles.Admin.ToString()) return StatusCode(StatusCodes.Status403Forbidden, "Acesso negado.");
+
+        var updatedUser = await _userService.AdminUpdateUserAsync(id, dto);
+        return Ok(updatedUser);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o usuário. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+      try
+      {
+        await _userService.ChangePasswordAsync(User.GetUserName(), dto);
+        return Ok();
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível alterar a senha. Erro: {ex.Message}");
       }
     }
 

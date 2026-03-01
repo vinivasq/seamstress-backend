@@ -15,6 +15,11 @@ namespace Seamstress.Persistence
 
     }
 
+    public async Task<User[]> GetAllUsersAsync()
+    {
+      return await _context.Users.Where(u => u.IsActive == true).AsNoTracking().ToArrayAsync();
+    }
+
     public async Task<User[]> GetAllExecutorsAsync()
     {
       return await _context.Users.Where(user => user.Role == Domain.Enum.Roles.Executor && user.IsActive == true).AsNoTracking().ToArrayAsync();

@@ -30,6 +30,86 @@ namespace Seamstress.Application
       this._generalPersistence = generalPersistence;
     }
 
+    public async Task<UserOutputDto[]> GetAllUsersAsync()
+    {
+      try
+      {
+        var users = await _userPersistence.GetAllUsersAsync() ?? throw new Exception("Nenhum usuário encontrado");
+
+        List<UserOutputDto> lstUsersDto = _mapper.Map<UserOutputDto[]>(users).ToList();
+
+        lstUsersDto.ForEach(userDto =>
+        {
+          userDto.Name = users.Where(user => user.Id == userDto.Id).Select(user => $"{user.FirstName} {user.LastName}").First();
+        });
+
+        return lstUsersDto.ToArray();
+      }
+      catch (Exception ex)
+      {
+        throw new Exception($"Erro ao recuperar os usuários. Erro {ex.Message}");
+      }
+    }
+
+    public async Task<UserOutputDto> AdminUpdateUserAsync(int id, AdminUserUpdateDto dto)
+    {
+      try
+      {
+        var user = await _userManager.FindByIdAsync(id.ToString())
+          ?? throw new Exception($"Não foi encontrado um usuário de Id: {id}");
+
+        if (user.UserName != dto.UserName.ToLower())
+        {
+          if (await _userManager.Users.AnyAsync(u => u.UserName == dto.UserName.ToLower()))
+            throw new Exception("Nome de usuário já está em uso");
+
+          user.UserName = dto.UserName.ToLower();
+          user.NormalizedUserName = dto.UserName.ToUpper();
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+        {
+          var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+          var result = await _userManager.ResetPasswordAsync(user, token, dto.Password);
+          if (!result.Succeeded)
+            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
+        if (dto.Role.HasValue)
+          user.Role = dto.Role.Value;
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+          throw new Exception(string.Join(", ", updateResult.Errors.Select(e => e.Description)));
+
+        var updatedUser = await _userPersistence.GetUserByIdAsync(id);
+        var userDto = _mapper.Map<UserOutputDto>(updatedUser);
+        userDto.Name = $"{updatedUser.FirstName} {updatedUser.LastName}";
+        return userDto;
+      }
+      catch (Exception ex)
+      {
+        throw new Exception($"Erro ao atualizar o usuário. Erro: {ex.Message}");
+      }
+    }
+
+    public async Task ChangePasswordAsync(string username, ChangePasswordDto dto)
+    {
+      try
+      {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username.ToLower())
+          ?? throw new Exception("Usuário não encontrado");
+
+        var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+        if (!result.Succeeded)
+          throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+      }
+      catch (Exception ex)
+      {
+        throw new Exception($"Erro ao alterar a senha. Erro: {ex.Message}");
+      }
+    }
+
     public async Task<UserOutputDto[]> GetAllExecutorsAsync()
     {
       try
