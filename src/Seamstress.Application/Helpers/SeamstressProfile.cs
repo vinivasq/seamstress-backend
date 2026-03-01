@@ -19,6 +19,7 @@ namespace Seamstress.Application.Helpers
       CreateMap<ItemSize, ItemSizeForMeasurementsDto>().ReverseMap();
       CreateMap<ItemSizeMeasurement, ItemSizeMeasurementDto>().ReverseMap();
       CreateMap<Customer, CustomerOutputDto>();
+      CreateMap<Persistence.Dtos.CustomerExportDto, CustomerExportDto>().ReverseMap();
       CreateMap<OrderInputDto, Order>();
       CreateMap<Order, OrderOutputDto>();
       CreateMap<ItemOrderInputDto, ItemOrder>();

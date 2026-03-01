@@ -1,6 +1,6 @@
 using Seamstress.Application.Dtos;
-using Seamstress.Domain;
 using Seamstress.Persistence.Helpers;
+using Seamstress.Persistence.Parameters;
 
 namespace Seamstress.Application.Contracts
 {
@@ -12,8 +12,8 @@ namespace Seamstress.Application.Contracts
     public Task<bool> CheckFK(int id);
     public Task<bool> DeleteCustomer(int id);
 
-
     public Task<PageList<CustomerDto>> GetCustomersAsync(PageParams pageParams);
     public Task<CustomerDto> GetCustomerByIdAsync(int id);
+    public Task<List<CustomerExportDto>> GetCustomersForExportAsync(CustomerExportParams exportParams);
   }
 }

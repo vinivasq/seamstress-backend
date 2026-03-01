@@ -4,6 +4,7 @@ using Seamstress.API.Extensions;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Persistence.Helpers;
+using Seamstress.Persistence.Parameters;
 
 namespace Seamstress.API.Controllers
 {
@@ -124,6 +125,23 @@ namespace Seamstress.API.Controllers
       catch (Exception ex)
       {
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível deletar o cliente. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> Export([FromQuery] CustomerExportParams exportParams)
+    {
+      try
+      {
+        var customers = await _customerService.GetCustomersForExportAsync(exportParams);
+
+        if (customers == null || customers.Count == 0) return NoContent();
+
+        return Ok(customers);
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível exportar os clientes. Erro: {ex.Message}");
       }
     }
 
