@@ -14,5 +14,6 @@ namespace Seamstress.Application.Contracts
     Task<UserUpdateDto> UpdateAccount(UserUpdateDto userUpdateDto);
     Task<UserOutputDto> AdminUpdateUserAsync(int id, AdminUserUpdateDto dto);
     Task ChangePasswordAsync(string username, ChangePasswordDto dto);
+    Task DeleteUserAsync(int id);
   }
 }
