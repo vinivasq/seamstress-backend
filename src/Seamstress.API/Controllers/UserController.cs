@@ -86,6 +86,7 @@ namespace Seamstress.API.Controllers
       {
         var user = await _userService.GetUserByUserNameAsync(userLogin.UserName);
         if (user == null) return Unauthorized("Usuário ou senha inválidos.");
+        if (user.IsActive == false) return Unauthorized("Usuário ou senha inválidos.");
 
         var result = await _userService.CheckUserPasswordAsync(user, userLogin.Password);
         if (!result.Succeeded) return Unauthorized("Usuário ou senha inválidos.");
@@ -158,6 +159,23 @@ namespace Seamstress.API.Controllers
       catch (Exception ex)
       {
         return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível atualizar o usuário. Erro: {ex.Message}");
+      }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+      try
+      {
+        var requestingUser = await _userService.GetUserByUserNameAsync(User.GetUserName());
+        if (requestingUser.Role != Roles.Admin.ToString()) return StatusCode(StatusCodes.Status403Forbidden, "Acesso negado.");
+
+        await _userService.DeleteUserAsync(id);
+        return Ok();
+      }
+      catch (Exception ex)
+      {
+        return this.StatusCode(StatusCodes.Status500InternalServerError, $"Não foi possível deletar o usuário. Erro: {ex.Message}");
       }
     }
 

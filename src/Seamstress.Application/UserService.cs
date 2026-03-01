@@ -110,6 +110,25 @@ namespace Seamstress.Application
       }
     }
 
+    public async Task DeleteUserAsync(int id)
+    {
+      try
+      {
+        var user = await _userManager.FindByIdAsync(id.ToString())
+          ?? throw new Exception($"Não foi encontrado um usuário de Id: {id}");
+
+        user.IsActive = false;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+          throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+      }
+      catch (Exception ex)
+      {
+        throw new Exception($"Erro ao deletar o usuário. Erro: {ex.Message}");
+      }
+    }
+
     public async Task<UserOutputDto[]> GetAllExecutorsAsync()
     {
       try
