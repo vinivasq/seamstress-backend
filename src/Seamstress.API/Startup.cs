@@ -115,7 +115,6 @@ namespace Seamstress.API
       services.AddScoped<IStatisticsPersistence, StatisticsPersistence>();
       services.AddScoped<IStatisticsService, StatisticsService>();
       services.AddHttpClient<IImportService, ImportService>();
-      services.AddScoped<IImportMappingPersistence, ImportMappingPersistence>();
 
       services.AddSwaggerGen(c =>
       {
