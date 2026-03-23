@@ -381,6 +381,11 @@ namespace Seamstress.Application
             if (!existingSizes.SequenceEqual(incomingSizes))
                 changes.Add($"Tamanhos: [{string.Join(", ", existingSizes)}] → [{string.Join(", ", incomingSizes)}]");
 
+            var existingDesc = existing.MeasurementsDescription ?? "";
+            var incomingDesc = incoming.MeasurementsDescription ?? "";
+            if (existingDesc != incomingDesc)
+                changes.Add($"Descrição: atualizada");
+
             return changes;
         }
 
