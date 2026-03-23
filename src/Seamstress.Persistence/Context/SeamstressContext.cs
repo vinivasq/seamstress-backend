@@ -28,6 +28,7 @@ namespace Seamstress.Persistence.Context
     public DbSet<Set> Sets { get; set; } = null!;
     public DbSet<ItemSizeMeasurement> ItemSizeMeasurements { get; set; } = null!;
     public DbSet<SalePlatform> SalePlatforms { get; set; } = null!;
+    public DbSet<ImportMapping> ImportMappings { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -92,6 +93,30 @@ namespace Seamstress.Persistence.Context
       modelBuilder.Entity<User>()
             .Property(u => u.IsActive)
             .HasDefaultValue(true);
+
+      // Item — ExternalId + SalePlatformId unique index
+      modelBuilder.Entity<Item>()
+          .HasIndex(i => new { i.ExternalId, i.SalePlatformId })
+          .IsUnique()
+          .HasFilter("\"ExternalId\" IS NOT NULL");
+
+      // Item — SalePlatform FK
+      modelBuilder.Entity<Item>()
+          .HasOne(i => i.SalePlatform)
+          .WithMany()
+          .HasForeignKey(i => i.SalePlatformId)
+          .OnDelete(DeleteBehavior.SetNull);
+
+      // ImportMapping — unique SalePlatformId
+      modelBuilder.Entity<ImportMapping>()
+          .HasIndex(m => m.SalePlatformId)
+          .IsUnique();
+
+      modelBuilder.Entity<ImportMapping>()
+          .HasOne(m => m.SalePlatform)
+          .WithMany()
+          .HasForeignKey(m => m.SalePlatformId)
+          .OnDelete(DeleteBehavior.Cascade);
     }
   }
 }
