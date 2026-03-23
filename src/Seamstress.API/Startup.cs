@@ -115,6 +115,8 @@ namespace Seamstress.API
       services.AddScoped<IStatisticsPersistence, StatisticsPersistence>();
       services.AddScoped<IStatisticsService, StatisticsService>();
       services.AddHttpClient<IImportService, ImportService>();
+      services.Configure<NuvemShopSettings>(Configuration.GetSection("NuvemShop"));
+      services.AddHttpClient<INuvemShopService, NuvemShopService>();
 
       services.AddSwaggerGen(c =>
       {
