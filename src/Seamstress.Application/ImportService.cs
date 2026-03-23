@@ -128,7 +128,7 @@ namespace Seamstress.Application
                 foreach (var product in groupedProducts)
                 {
                     var fabricMatch = allFabrics.FirstOrDefault(f =>
-                        string.Equals(f.Name, product.Fabric, StringComparison.OrdinalIgnoreCase));
+                        string.Equals(f.Name?.Trim(), product.Fabric?.Trim(), StringComparison.OrdinalIgnoreCase));
 
                     if (fabricMatch == null && !string.IsNullOrWhiteSpace(product.Fabric))
                     {
@@ -676,7 +676,7 @@ namespace Seamstress.Application
         }
 
         // Simple reflection helpers for the shared entity shape (Id, Name, IsActive)
-        private static string GetName<T>(T entity) => (string)typeof(T).GetProperty("Name")!.GetValue(entity)!;
+        private static string GetName<T>(T entity) => ((string)typeof(T).GetProperty("Name")!.GetValue(entity)!).Trim();
         private static int GetId<T>(T entity) => (int)typeof(T).GetProperty("Id")!.GetValue(entity)!;
         private static bool? GetIsActive<T>(T entity) => (bool?)typeof(T).GetProperty("IsActive")?.GetValue(entity);
         private static void SetIsActive<T>(T entity, bool value) => typeof(T).GetProperty("IsActive")?.SetValue(entity, (bool?)value);
