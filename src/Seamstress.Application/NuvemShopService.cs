@@ -42,8 +42,10 @@ namespace Seamstress.Application
                     Failed = new List<ImportPreviewItemDto>()
                 };
 
-            var normalized = NormalizeProducts(products);
-            return await _importService.GeneratePreviewAsync(normalized, SalePlatformId);
+            var (normalized, failed) = NormalizeProducts(products);
+            var preview = await _importService.GeneratePreviewAsync(normalized, SalePlatformId);
+            preview.Failed.AddRange(failed);
+            return preview;
         }
 
         private async Task<List<JsonElement>> FetchAllProductsAsync()
@@ -73,19 +75,30 @@ namespace Seamstress.Application
             return allProducts;
         }
 
-        private List<NormalizedProduct> NormalizeProducts(List<JsonElement> products)
+        private (List<NormalizedProduct> normalized, List<ImportPreviewItemDto> failed) NormalizeProducts(List<JsonElement> products)
         {
             var normalized = new List<NormalizedProduct>();
+            var failed = new List<ImportPreviewItemDto>();
 
             foreach (var product in products)
             {
+                var productName = product.TryGetProperty("name", out var nameObj) && nameObj.TryGetProperty("pt", out var namePt)
+                    ? namePt.GetString() ?? "" : "";
+                var productId = product.TryGetProperty("id", out var idEl) ? idEl.GetInt64().ToString() : "";
+
                 // Fail: no categories
                 if (!product.TryGetProperty("categories", out var categories) || categories.GetArrayLength() == 0)
+                {
+                    failed.Add(new ImportPreviewItemDto { ExternalId = productId, Name = productName, Action = "Failed", FailReason = "Produto sem categorias (tecido)" });
                     continue;
+                }
 
                 // Fail: no variants
                 if (!product.TryGetProperty("variants", out var variants) || variants.GetArrayLength() == 0)
+                {
+                    failed.Add(new ImportPreviewItemDto { ExternalId = productId, Name = productName, Action = "Failed", FailReason = "Produto sem variantes (cores/tamanhos)" });
                     continue;
+                }
 
                 // Get attribute indices for Cor/Tamanho
                 var (colorIndex, sizeIndex) = GetAttributeIndices(product);
@@ -100,9 +113,15 @@ namespace Seamstress.Application
                     {
                         var valuesArr = values.EnumerateArray().ToList();
                         if (colorIndex >= 0 && colorIndex < valuesArr.Count)
-                            colors.Add(valuesArr[colorIndex].GetProperty("pt").GetString() ?? "");
+                        {
+                            var color = valuesArr[colorIndex].GetProperty("pt").GetString();
+                            if (!string.IsNullOrWhiteSpace(color)) colors.Add(color);
+                        }
                         if (sizeIndex >= 0 && sizeIndex < valuesArr.Count)
-                            sizes.Add(valuesArr[sizeIndex].GetProperty("pt").GetString() ?? "");
+                        {
+                            var size = valuesArr[sizeIndex].GetProperty("pt").GetString();
+                            if (!string.IsNullOrWhiteSpace(size)) sizes.Add(size);
+                        }
                     }
                 }
 
@@ -137,8 +156,8 @@ namespace Seamstress.Application
 
                 normalized.Add(new NormalizedProduct
                 {
-                    ExternalId = product.GetProperty("id").GetInt64().ToString(),
-                    Name = product.GetProperty("name").GetProperty("pt").GetString() ?? "",
+                    ExternalId = productId,
+                    Name = productName,
                     Price = price,
                     Fabric = fabric,
                     Colors = colors.ToList(),
@@ -148,7 +167,7 @@ namespace Seamstress.Application
                 });
             }
 
-            return normalized;
+            return (normalized, failed);
         }
 
         private (int colorIndex, int sizeIndex) GetAttributeIndices(JsonElement product)
