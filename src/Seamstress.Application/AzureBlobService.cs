@@ -59,6 +59,22 @@ namespace Seamstress.Application
       }
     }
 
+    public async Task<string> UploadModelImageAsync(Stream imageStream, string imageName)
+    {
+      BlobServiceClient client = GetServiceClient();
+      try
+      {
+        BlobContainerClient blobContainer = client.GetBlobContainerClient("images");
+        var blob = blobContainer.GetBlobClient($"models/{imageName}");
+        await blob.UploadAsync(imageStream);
+        return blob.Name.Split("/")[1];
+      }
+      catch (Exception ex)
+      {
+        throw new Exception($"Erro ao fazer upload da imagem: {ex.Message}");
+      }
+    }
+
     public bool DeleteModelImage(string imageName)
     {
       BlobServiceClient client = GetServiceClient();
