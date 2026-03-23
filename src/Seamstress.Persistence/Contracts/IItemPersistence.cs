@@ -8,5 +8,7 @@ namespace Seamstress.Persistence.Contracts
     Task<Item?> GetItemByIdAsync(int id);
     Task<Item?> GetItemWithoutAttributesAsync(int id);
     Task<bool> CheckFKAsync(int id);
+    Task<Item[]> GetItemsByExternalSourceAsync(int salePlatformId);
+    Task<Item?> GetItemByIdTrackedAsync(int id);
   }
 }

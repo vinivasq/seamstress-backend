@@ -57,5 +57,30 @@ namespace Seamstress.Persistence
     {
       return await _context.ItemOrder.AnyAsync(x => x.ItemId == id);
     }
+
+    public async Task<Item[]> GetItemsByExternalSourceAsync(int salePlatformId)
+    {
+      IQueryable<Item> query = _context.Items
+          .AsNoTracking()
+          .Include(i => i.ItemColors).ThenInclude(ic => ic.Color)
+          .Include(i => i.ItemFabrics).ThenInclude(ifab => ifab.Fabric)
+          .Include(i => i.ItemSizes).ThenInclude(isz => isz.Size)
+          .Where(i => i.SalePlatformId == salePlatformId)
+          .OrderBy(i => i.Id);
+
+      return await query.ToArrayAsync();
+    }
+
+    public async Task<Item?> GetItemByIdTrackedAsync(int id)
+    {
+      // Same as GetItemByIdAsync but WITHOUT AsNoTracking — for update operations
+      IQueryable<Item> query = _context.Items
+          .Include(i => i.ItemColors).ThenInclude(ic => ic.Color)
+          .Include(i => i.ItemFabrics).ThenInclude(ifab => ifab.Fabric)
+          .Include(i => i.ItemSizes).ThenInclude(isz => isz.Size)
+          .Include(i => i.Set);
+
+      return await query.FirstOrDefaultAsync(i => i.Id == id);
+    }
   }
 }

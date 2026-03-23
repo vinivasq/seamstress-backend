@@ -12,5 +12,6 @@ namespace Seamstress.Persistence.Contracts
     void RollbackTransaction();
     bool SaveChanges();
     Task<bool> SaveChangesAsync();
+    void ClearChangeTracker();
   }
 }
