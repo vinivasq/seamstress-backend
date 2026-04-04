@@ -217,11 +217,11 @@ namespace Seamstress.Application
       }
     }
 
-    public async Task<Item[]> GetItemsAsync()
+    public async Task<Item[]> GetItemsAsync(bool activeOnly = true)
     {
       try
       {
-        return await _itemPersistence.GetAllItemsAsync();
+        return await _itemPersistence.GetAllItemsAsync(activeOnly);
       }
       catch (Exception ex)
       {

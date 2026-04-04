@@ -19,11 +19,11 @@ namespace Seamstress.API.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult> Get()
+    public async Task<ActionResult> Get([FromQuery] bool activeOnly = true)
     {
       try
       {
-        var items = await _itemService.GetItemsAsync();
+        var items = await _itemService.GetItemsAsync(activeOnly);
         if (items == null) NoContent();
 
         return Ok(items);
