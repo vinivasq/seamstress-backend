@@ -14,9 +14,12 @@ namespace Seamstress.Persistence
       this._context = context;
     }
 
-    public async Task<Item[]> GetAllItemsAsync()
+    public async Task<Item[]> GetAllItemsAsync(bool activeOnly = true)
     {
       IQueryable<Item> query = _context.Items;
+
+      if (activeOnly)
+        query = query.Where(item => item.IsActive == true);
 
       query = query.Include(item => item.ItemColors).ThenInclude(IC => IC.Color);
       query = query.Include(item => item.ItemFabrics).ThenInclude(IF => IF.Fabric);
