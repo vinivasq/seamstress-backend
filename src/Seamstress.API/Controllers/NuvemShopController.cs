@@ -26,7 +26,8 @@ namespace Seamstress.API.Controllers
         {
             try
             {
-                var role = await GetUserRole();
+                var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
+                var role = user?.Role ?? "";
                 if (role != Roles.Admin.ToString() && role != Roles.Requester.ToString())
                     return StatusCode(StatusCodes.Status403Forbidden, "Acesso negado.");
 
@@ -37,12 +38,6 @@ namespace Seamstress.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-        }
-
-        private async Task<string> GetUserRole()
-        {
-            var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
-            return user?.Role ?? "";
         }
     }
 }

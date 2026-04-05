@@ -22,11 +22,9 @@ namespace Seamstress.Application
     {
         private readonly IGeneralPersistence _generalPersistence;
         private readonly IItemPersistence _itemPersistence;
-        private readonly IAzureBlobService _azureBlobService;
         private readonly IColorPersistence _colorPersistence;
         private readonly IFabricPersistence _fabricPersistence;
         private readonly ISizePersistence _sizePersistence;
-        private readonly HttpClient _httpClient;
         private readonly ImageProcessingQueue _imageQueue;
 
         // In-memory session cache: sessionId -> session data
@@ -35,20 +33,16 @@ namespace Seamstress.Application
         public ImportService(
             IGeneralPersistence generalPersistence,
             IItemPersistence itemPersistence,
-            IAzureBlobService azureBlobService,
             IColorPersistence colorPersistence,
             IFabricPersistence fabricPersistence,
             ISizePersistence sizePersistence,
-            HttpClient httpClient,
             ImageProcessingQueue imageQueue)
         {
             _generalPersistence = generalPersistence;
             _itemPersistence = itemPersistence;
-            _azureBlobService = azureBlobService;
             _colorPersistence = colorPersistence;
             _fabricPersistence = fabricPersistence;
             _sizePersistence = sizePersistence;
-            _httpClient = httpClient;
             _imageQueue = imageQueue;
         }
 
@@ -464,67 +458,6 @@ namespace Seamstress.Application
         private static int GetId<T>(T entity) => (int)typeof(T).GetProperty("Id")!.GetValue(entity)!;
         private static bool? GetIsActive<T>(T entity) => (bool?)typeof(T).GetProperty("IsActive")?.GetValue(entity);
         private static void SetIsActive<T>(T entity, bool value) => typeof(T).GetProperty("IsActive")?.SetValue(entity, (bool?)value);
-
-        private async Task DownloadAndUploadImages(
-            Dictionary<string, NormalizedProduct> products,
-            int salePlatformId,
-            ImportResultDto result)
-        {
-            // Re-fetch items (tracked) to update ImageURL
-            var allItems = await _itemPersistence.GetItemsByExternalSourceAsync(salePlatformId);
-
-            foreach (var item in allItems.Where(i => i.IsActive == true && i.ExternalId != null))
-            {
-                if (!products.TryGetValue(item.ExternalId!, out var product)) continue;
-                if (product.ImageUrls.Count == 0) continue;
-
-                // Compare existing image URLs with new ones to avoid re-downloading
-                var existingBlobs = string.IsNullOrEmpty(item.ImageURL)
-                    ? new List<string>()
-                    : item.ImageURL.Split(";", StringSplitOptions.RemoveEmptyEntries).Select(b => b.Trim()).ToList();
-
-                // For new items or items with changed images, download all
-                // (We can't compare CDN URLs to blob names, so on update we re-download)
-                var blobNames = new List<string>();
-                foreach (var imageUrl in product.ImageUrls)
-                {
-                    try
-                    {
-                        if (string.IsNullOrWhiteSpace(imageUrl)) continue;
-                        var url = imageUrl.StartsWith("http") ? imageUrl : $"https:{imageUrl}";
-
-                        using var response = await _httpClient.GetAsync(url);
-                        response.EnsureSuccessStatusCode();
-                        using var stream = await response.Content.ReadAsStreamAsync();
-
-                        var extension = Path.GetExtension(new Uri(url).AbsolutePath);
-                        if (string.IsNullOrEmpty(extension)) extension = ".jpg";
-                        var imageName = $"{Guid.NewGuid()}{extension}";
-
-                        var blobName = await _azureBlobService.UploadModelImageAsync(stream, imageName);
-                        blobNames.Add(blobName);
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Errors.Add($"Erro ao baixar imagem para {item.Name}: {ex.Message}");
-                    }
-                }
-
-                if (blobNames.Count > 0)
-                {
-                    // Delete old blobs (orphaned)
-                    foreach (var oldBlob in existingBlobs)
-                    {
-                        _azureBlobService.DeleteModelImage(oldBlob);
-                    }
-
-                    item.ImageURL = string.Join(";", blobNames);
-                    _generalPersistence.Update(item);
-                }
-            }
-
-            await _generalPersistence.SaveChangesAsync();
-        }
 
         #endregion
 

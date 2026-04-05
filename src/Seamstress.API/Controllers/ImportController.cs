@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Seamstress.API.Extensions;
-using Seamstress.Application;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 using Seamstress.Domain.Enum;
@@ -23,11 +22,12 @@ namespace Seamstress.API.Controllers
         }
 
         [HttpPost("preview")]
-        public async Task<IActionResult> Preview([FromBody] PreviewRequest request)
+        public async Task<IActionResult> Preview([FromBody] PreviewRequestDto request)
         {
             try
             {
-                var role = await GetUserRole();
+                var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
+                var role = user?.Role ?? "";
                 if (role != Roles.Admin.ToString() && role != Roles.Requester.ToString())
                     return StatusCode(StatusCodes.Status403Forbidden, "Acesso negado.");
 
@@ -42,11 +42,12 @@ namespace Seamstress.API.Controllers
         }
 
         [HttpPost("execute")]
-        public async Task<IActionResult> Execute([FromBody] ExecuteRequest request)
+        public async Task<IActionResult> Execute([FromBody] ExecuteRequestDto request)
         {
             try
             {
-                var role = await GetUserRole();
+                var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
+                var role = user?.Role ?? "";
                 if (role != Roles.Admin.ToString() && role != Roles.Requester.ToString())
                     return StatusCode(StatusCodes.Status403Forbidden, "Acesso negado.");
 
@@ -58,23 +59,5 @@ namespace Seamstress.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Erro: {ex.Message}");
             }
         }
-
-        private async Task<string> GetUserRole()
-        {
-            var user = await _userService.GetUserByUserNameAsync(User.GetUserName());
-            return user?.Role ?? "";
-        }
-    }
-
-    // Request DTOs for controller-specific request shapes
-    public class PreviewRequest
-    {
-        public List<NormalizedProduct> Products { get; set; } = new();
-        public int SalePlatformId { get; set; }
-    }
-
-    public class ExecuteRequest
-    {
-        public string SessionId { get; set; } = null!;
     }
 }
