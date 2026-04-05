@@ -57,5 +57,10 @@ namespace Seamstress.Persistence
     {
       _context.Database.RollbackTransaction();
     }
+
+    public void ClearChangeTracker()
+    {
+      _context.ChangeTracker.Clear();
+    }
   }
 }

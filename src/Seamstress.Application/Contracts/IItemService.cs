@@ -11,7 +11,7 @@ namespace Seamstress.Application.Contracts
     public Task<bool> CheckFK(int id);
     public Task<bool> DeleteITem(int id);
 
-    public Task<Item[]> GetItemsAsync();
+    public Task<Item[]> GetItemsAsync(bool activeOnly = true);
     public Task<Item> GetItemByIdAsync(int id);
 
   }

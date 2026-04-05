@@ -12,5 +12,9 @@ namespace Seamstress.Domain
     public string ImageURL { get; set; } = null!;
     public decimal Price { get; set; }
     public bool? IsActive { get; set; } = true;
+    public string? ExternalId { get; set; }
+    public int? SalePlatformId { get; set; }
+    public SalePlatform? SalePlatform { get; set; }
+    public string? MeasurementsDescription { get; set; }
   }
 }

@@ -219,6 +219,8 @@ namespace Seamstress.Application
         Item itemResponse = await _itemPersistence.GetItemByIdAsync(itemOrder.ItemId)
           ?? throw new Exception("Não foi encontrado o item a ser validao");
 
+        if (itemResponse.IsActive != true) throw new Exception($"O modelo '{itemResponse.Name}' está inativo e não pode ser utilizado em pedidos");
+
         if (itemResponse.ItemColors.FirstOrDefault(x => x.ColorId == itemOrder.ColorId) == null) throw new Exception($"Cor inválida no item de id: {itemOrder.ItemId}"); ;
         if (itemResponse.ItemFabrics.FirstOrDefault(x => x.FabricId == itemOrder.FabricId) == null) throw new Exception($"Tecido inválido no item de id: {itemOrder.ItemId}");
         if (itemResponse.ItemSizes.FirstOrDefault(x => x.SizeId == itemOrder.SizeId) == null) throw new Exception($"Tamanho inválido no item de id: {itemOrder.ItemId}");
