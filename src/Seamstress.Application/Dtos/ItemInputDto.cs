@@ -12,5 +12,6 @@ namespace Seamstress.Application.Dtos
     public IEnumerable<ItemSize> ItemSizes { get; set; } = null!;
     public string ImageURL { get; set; } = null!;
     public decimal Price { get; set; }
+    public string? MeasurementsDescription { get; set; }
   }
 }
