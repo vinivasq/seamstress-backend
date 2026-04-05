@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Options;
 using Seamstress.Application.Contracts;
 using Seamstress.Application.Dtos;
 
@@ -10,22 +9,23 @@ namespace Seamstress.Application
     public class NuvemShopService : INuvemShopService
     {
         private readonly HttpClient _httpClient;
-        private readonly NuvemShopSettings _settings;
         private readonly IImportService _importService;
         private const int SalePlatformId = 1; // "Ecommerce" in SalePlatforms table
 
         public NuvemShopService(
             HttpClient httpClient,
-            IOptions<NuvemShopSettings> settings,
             IImportService importService)
         {
             _httpClient = httpClient;
-            _settings = settings.Value;
             _importService = importService;
 
-            _httpClient.BaseAddress = new Uri($"https://api.nuvemshop.com.br/v1/{_settings.StoreId}/");
-            _httpClient.DefaultRequestHeaders.Add("Authentication", $"bearer {_settings.AccessToken}");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", _settings.UserAgent);
+            var accessToken = Environment.GetEnvironmentVariable("NUVEMSHOP_ACCESS_TOKEN")!;
+            var userAgent = Environment.GetEnvironmentVariable("NUVEMSHOP_USER_AGENT")!;
+            var storeId = Environment.GetEnvironmentVariable("NUVEMSHOP_STORE_ID")!;
+
+            _httpClient.BaseAddress = new Uri($"https://api.nuvemshop.com.br/v1/{storeId}/");
+            _httpClient.DefaultRequestHeaders.Add("Authentication", $"bearer {accessToken}");
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", userAgent);
         }
 
         public async Task<ImportPreviewDto> FetchAndPreviewAsync()
