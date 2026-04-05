@@ -27,6 +27,7 @@ namespace Seamstress.Application
         private readonly IFabricPersistence _fabricPersistence;
         private readonly ISizePersistence _sizePersistence;
         private readonly HttpClient _httpClient;
+        private readonly ImageProcessingQueue _imageQueue;
 
         // In-memory session cache: sessionId -> session data
         private static readonly ConcurrentDictionary<string, ImportSession> _sessions = new();
@@ -38,7 +39,8 @@ namespace Seamstress.Application
             IColorPersistence colorPersistence,
             IFabricPersistence fabricPersistence,
             ISizePersistence sizePersistence,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            ImageProcessingQueue imageQueue)
         {
             _generalPersistence = generalPersistence;
             _itemPersistence = itemPersistence;
@@ -47,6 +49,7 @@ namespace Seamstress.Application
             _fabricPersistence = fabricPersistence;
             _sizePersistence = sizePersistence;
             _httpClient = httpClient;
+            _imageQueue = imageQueue;
         }
 
         public async Task<ImportPreviewDto> GeneratePreviewAsync(List<NormalizedProduct> products, int salePlatformId)
@@ -322,11 +325,23 @@ namespace Seamstress.Application
                     throw;
                 }
 
-                // Clear change tracker to avoid conflicts when re-fetching items for image download
+                // Clear change tracker
                 _generalPersistence.ClearChangeTracker();
 
-                // IMAGE DOWNLOAD (after transaction commits)
-                await DownloadAndUploadImages(normalizedProducts, session.SalePlatformId, result);
+                // Enqueue image processing only for created/updated items
+                var changedIds = new HashSet<string>();
+                foreach (var item in preview.ToCreate) changedIds.Add(item.ExternalId);
+                foreach (var item in preview.ToUpdate) changedIds.Add(item.ExternalId);
+
+                if (changedIds.Count > 0)
+                {
+                    await _imageQueue.EnqueueAsync(new ImageProcessingJob
+                    {
+                        Products = normalizedProducts,
+                        ChangedExternalIds = changedIds,
+                        SalePlatformId = session.SalePlatformId
+                    });
+                }
 
                 // Clean up session
                 _sessions.TryRemove(sessionId, out _);
@@ -367,17 +382,17 @@ namespace Seamstress.Application
             if (existing.Price != incoming.Price)
                 changes.Add($"Preço: {existing.Price} → {incoming.Price}");
 
-            var existingColors = existing.ItemColors.Select(ic => ic.Color?.Name?.ToLower()).OrderBy(c => c).ToList();
-            var incomingColors = incoming.Colors.Select(c => c.ToLower()).OrderBy(c => c).ToList();
+            var existingColors = existing.ItemColors.Select(ic => ic.Color?.Name?.Trim().ToLower()).OrderBy(c => c).ToList();
+            var incomingColors = incoming.Colors.Select(c => c.Trim().ToLower()).OrderBy(c => c).ToList();
             if (!existingColors.SequenceEqual(incomingColors))
                 changes.Add($"Cores: [{string.Join(", ", existingColors)}] → [{string.Join(", ", incomingColors)}]");
 
-            var existingFabric = existing.ItemFabrics.FirstOrDefault()?.Fabric?.Name?.ToLower() ?? "";
-            if (existingFabric != incoming.Fabric.ToLower())
+            var existingFabric = existing.ItemFabrics.FirstOrDefault()?.Fabric?.Name?.Trim().ToLower() ?? "";
+            if (existingFabric != incoming.Fabric.Trim().ToLower())
                 changes.Add($"Tecido: {existingFabric} → {incoming.Fabric}");
 
-            var existingSizes = existing.ItemSizes.Select(isz => isz.Size?.Name?.ToLower()).OrderBy(s => s).ToList();
-            var incomingSizes = incoming.Sizes.Select(s => s.ToLower()).OrderBy(s => s).ToList();
+            var existingSizes = existing.ItemSizes.Select(isz => isz.Size?.Name?.Trim().ToLower()).OrderBy(s => s).ToList();
+            var incomingSizes = incoming.Sizes.Select(s => s.Trim().ToLower()).OrderBy(s => s).ToList();
             if (!existingSizes.SequenceEqual(incomingSizes))
                 changes.Add($"Tamanhos: [{string.Join(", ", existingSizes)}] → [{string.Join(", ", incomingSizes)}]");
 

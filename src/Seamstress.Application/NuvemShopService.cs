@@ -12,7 +12,7 @@ namespace Seamstress.Application
         private readonly HttpClient _httpClient;
         private readonly NuvemShopSettings _settings;
         private readonly IImportService _importService;
-        private const int SalePlatformId = 7;
+        private const int SalePlatformId = 1; // "Ecommerce" in SalePlatforms table
 
         public NuvemShopService(
             HttpClient httpClient,
@@ -25,7 +25,7 @@ namespace Seamstress.Application
 
             _httpClient.BaseAddress = new Uri($"https://api.nuvemshop.com.br/v1/{_settings.StoreId}/");
             _httpClient.DefaultRequestHeaders.Add("Authentication", $"bearer {_settings.AccessToken}");
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", _settings.UserAgent);
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", _settings.UserAgent);
         }
 
         public async Task<ImportPreviewDto> FetchAndPreviewAsync()
