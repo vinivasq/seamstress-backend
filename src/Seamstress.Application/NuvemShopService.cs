@@ -181,8 +181,8 @@ namespace Seamstress.Application
                 foreach (var attr in attributes.EnumerateArray())
                 {
                     var name = attr.GetProperty("pt").GetString()?.ToLower() ?? "";
-                    if (name == "cor") colorIndex = i;
-                    else if (name == "tamanho") sizeIndex = i;
+                    if (name.StartsWith("cor")) colorIndex = i;
+                    else if (name.StartsWith("tamanho")) sizeIndex = i;
                     i++;
                 }
             }
