@@ -8,7 +8,7 @@ namespace Seamstress.Domain
     public string City { get; set; } = null!;
     public string UF { get; set; } = null!;
     public string Neighborhood { get; set; } = null!;
-    public int Number { get; set; }
+    public string Number { get; set; } = null!;
     public string? Complement { get; set; }
     public string Cep { get; set; } = null!;
     public string CPF_CNPJ { get; set; } = null!;
