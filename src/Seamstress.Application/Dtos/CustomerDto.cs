@@ -30,8 +30,8 @@ namespace Seamstress.Application.Dtos
 
     [Display(Name = "Número")]
     [Required(ErrorMessage = "O campo {0} não pode ficar vazio.")]
-    [Range(1, 99999, ErrorMessage = "O campo {0} deve estar entre 1 e 99999")]
-    public int Number { get; set; }
+    [RegularExpression(@"^[A-Za-z0-9/\- ]{1,10}$", ErrorMessage = "O campo {0} aceita até 10 caracteres alfanuméricos, espaços, '-' ou '/'")]
+    public string Number { get; set; } = null!;
     public string? Complement { get; set; }
 
     [Display(Name = "CEP")]
