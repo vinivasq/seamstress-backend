@@ -233,13 +233,13 @@ namespace Seamstress.Application
                         };
 
                         item.ItemColors = product.Colors
-                            .Where(c => colorMap.ContainsKey(c.ToLower()))
-                            .Select(c => new ItemColor { ColorId = colorMap[c.ToLower()] }).ToList();
+                            .Where(c => colorMap.ContainsKey(c.Trim().ToLower()))
+                            .Select(c => new ItemColor { ColorId = colorMap[c.Trim().ToLower()] }).ToList();
                         item.ItemFabrics = string.IsNullOrWhiteSpace(product.Fabric) ? new List<ItemFabric>()
-                            : new List<ItemFabric> { new ItemFabric { FabricId = fabricMap[product.Fabric.ToLower()] } };
+                            : new List<ItemFabric> { new ItemFabric { FabricId = fabricMap[product.Fabric.Trim().ToLower()] } };
                         item.ItemSizes = product.Sizes
-                            .Where(s => sizeMap.ContainsKey(s.ToLower()))
-                            .Select(s => new ItemSize { SizeId = sizeMap[s.ToLower()] }).ToList();
+                            .Where(s => sizeMap.ContainsKey(s.Trim().ToLower()))
+                            .Select(s => new ItemSize { SizeId = sizeMap[s.Trim().ToLower()] }).ToList();
 
                         _generalPersistence.Add(item);
                         result.Created++;
@@ -266,7 +266,7 @@ namespace Seamstress.Application
 
                         // Update colors: remove old, add new
                         var existingColorIds = tracked.ItemColors.Select(ic => ic.ColorId).ToHashSet();
-                        var newColorIds = product.Colors.Where(c => colorMap.ContainsKey(c.ToLower())).Select(c => colorMap[c.ToLower()]).ToHashSet();
+                        var newColorIds = product.Colors.Where(c => colorMap.ContainsKey(c.Trim().ToLower())).Select(c => colorMap[c.Trim().ToLower()]).ToHashSet();
 
                         var colorsToRemove = tracked.ItemColors.Where(ic => !newColorIds.Contains(ic.ColorId)).ToArray();
                         if (colorsToRemove.Length > 0) _generalPersistence.DeleteRange(colorsToRemove);
@@ -276,7 +276,7 @@ namespace Seamstress.Application
                         // Update fabrics: remove old, add new
                         var existingFabricIds = tracked.ItemFabrics.Select(f => f.FabricId).ToHashSet();
                         var newFabricIds = string.IsNullOrWhiteSpace(product.Fabric) ? new HashSet<int>()
-                            : new HashSet<int> { fabricMap[product.Fabric.ToLower()] };
+                            : new HashSet<int> { fabricMap[product.Fabric.Trim().ToLower()] };
 
                         var fabricsToRemove = tracked.ItemFabrics.Where(f => !newFabricIds.Contains(f.FabricId)).ToArray();
                         if (fabricsToRemove.Length > 0) _generalPersistence.DeleteRange(fabricsToRemove);
@@ -285,14 +285,16 @@ namespace Seamstress.Application
 
                         // Update sizes: only add new, remove stale. NEVER recreate existing (preserves measurements)
                         var existingSizeIds = tracked.ItemSizes.Select(s => s.SizeId).ToHashSet();
-                        var newSizeIds = product.Sizes.Where(s => sizeMap.ContainsKey(s.ToLower())).Select(s => sizeMap[s.ToLower()]).ToHashSet();
+                        var newSizeIds = product.Sizes.Where(s => sizeMap.ContainsKey(s.Trim().ToLower())).Select(s => sizeMap[s.Trim().ToLower()]).ToHashSet();
 
                         var sizesToRemove = tracked.ItemSizes.Where(s => !newSizeIds.Contains(s.SizeId)).ToArray();
                         if (sizesToRemove.Length > 0) _generalPersistence.DeleteRange(sizesToRemove);
                         foreach (var sizeId in newSizeIds.Where(id => !existingSizeIds.Contains(id)))
                             _generalPersistence.Add(new ItemSize { ItemId = tracked.Id, SizeId = sizeId });
 
-                        _generalPersistence.Update(tracked);
+                        // tracked is loaded with change tracking enabled; EF auto-detects scalar mutations
+                        // and persists the explicit Add/DeleteRange on nav children. Calling DbSet.Update here
+                        // would re-traverse the graph and revert the Deleted/Added child states.
                         result.Updated++;
                     }
 
@@ -411,9 +413,12 @@ namespace Seamstress.Application
             var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var needsSave = false;
 
-            foreach (var name in names)
+            // Normalize input: trim to align with GetName (which also trims) so case-insensitive
+            // matching is not defeated by stray whitespace from upstream sources (e.g. NuvemShop).
+            var trimmedNames = names.Select(n => n.Trim()).Where(n => n.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+            foreach (var name in trimmedNames)
             {
-                // Use reflection to get Name, Id, IsActive (all lookup entities share this shape)
                 var existing = existingEntities.FirstOrDefault(e =>
                     string.Equals(GetName(e), name, StringComparison.OrdinalIgnoreCase));
 
@@ -441,7 +446,7 @@ namespace Seamstress.Application
                 await _generalPersistence.SaveChangesAsync();
                 // Refresh to get IDs for newly created entities
                 var refreshed = await refreshFunc();
-                foreach (var name in names)
+                foreach (var name in trimmedNames)
                 {
                     var entity = refreshed.FirstOrDefault(e =>
                         string.Equals(GetName(e), name, StringComparison.OrdinalIgnoreCase));

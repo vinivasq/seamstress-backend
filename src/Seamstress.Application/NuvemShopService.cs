@@ -114,12 +114,12 @@ namespace Seamstress.Application
                         var valuesArr = values.EnumerateArray().ToList();
                         if (colorIndex >= 0 && colorIndex < valuesArr.Count)
                         {
-                            var color = valuesArr[colorIndex].GetProperty("pt").GetString();
+                            var color = valuesArr[colorIndex].GetProperty("pt").GetString()?.Trim();
                             if (!string.IsNullOrWhiteSpace(color)) colors.Add(color);
                         }
                         if (sizeIndex >= 0 && sizeIndex < valuesArr.Count)
                         {
-                            var size = valuesArr[sizeIndex].GetProperty("pt").GetString();
+                            var size = valuesArr[sizeIndex].GetProperty("pt").GetString()?.Trim();
                             if (!string.IsNullOrWhiteSpace(size)) sizes.Add(size);
                         }
                     }
@@ -151,8 +151,8 @@ namespace Seamstress.Application
                 }
 
                 // Fabric = first category name
-                var fabric = categories.EnumerateArray().First()
-                    .GetProperty("name").GetProperty("pt").GetString() ?? "";
+                var fabric = (categories.EnumerateArray().First()
+                    .GetProperty("name").GetProperty("pt").GetString() ?? "").Trim();
 
                 normalized.Add(new NormalizedProduct
                 {
