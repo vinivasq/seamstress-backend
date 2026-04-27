@@ -24,7 +24,8 @@ namespace Seamstress.Persistence
     public async Task<PageList<Customer>> GetCustomersAsync(PageParams pageParams)
     {
       string normalizedTerm = new(pageParams.Term.Normalize(NormalizationForm.FormD).ToArray());
-      List<string> terms = normalizedTerm.Split(" ").ToList();
+      List<string> terms = normalizedTerm.Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList();
+      string digitsOnlyTerm = new(pageParams.Term.Where(char.IsDigit).ToArray());
 
       IQueryable<Customer> query = _context.Customers;
       query = query.Include(customer => customer.Sizings);
@@ -32,18 +33,24 @@ namespace Seamstress.Persistence
       if (terms.Count > 0)
       {
         Expression<Func<Customer, bool>> expression = customer =>
-            EF.Functions.Unaccent(customer.Name.ToLower()).StartsWith(terms[0].ToLower());
+            EF.Functions.Unaccent(customer.Name.ToLower()).Contains(terms[0].ToLower());
 
-        terms.ForEach(term =>
+        terms.Skip(1).ToList().ForEach(term =>
         {
           Expression<Func<Customer, bool>> termExpression = customer =>
               EF.Functions.Unaccent(customer.Name.ToLower()).Contains(term.ToLower());
 
           expression = CombineExpressions(expression, termExpression);
-
         });
 
-        query = query.Where(expression).Union(_context.Customers.Where(x => x.CPF_CNPJ.StartsWith(pageParams.Term)).Include(x => x.Sizings));
+        query = query.Where(expression);
+
+        if (digitsOnlyTerm.Length > 0)
+        {
+          query = query.Union(_context.Customers
+            .Where(x => x.CPF_CNPJ.Contains(digitsOnlyTerm))
+            .Include(x => x.Sizings));
+        }
       }
 
       query = query.OrderBy(customer => customer.Name.Trim().ToLower()).AsNoTracking();
